@@ -1,0 +1,2281 @@
+
+-------
+01/53/2017 19:53:34
+-------
+
+/*
+SQLyog Ultimate v8.5 
+MySQL - 5.5.23 : Database - zepk_kns_pro
+*********************************************************************
+*/
+/*!40101 SET NAMES utf8 */ 
+/*!40101 SET SQL_MODE=''*/ 
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */ 
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */ 
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */ 
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */ 
+/*Table structure for table `ds_group` */
+DROP TABLE IF EXISTS `ds_group` 
+CREATE TABLE `ds_group` (
+  `id` varchar(255) NOT NULL,
+  `relation` varchar(255) DEFAULT NULL COMMENT 'Ð Ð¾Ð´Ð¸Ñ‚ÐµÐ»ÑŒÑÐºÐ°Ñ Ð³Ñ€ÑƒÐ¿Ð¿Ð°',
+  `name` varchar(80) NOT NULL DEFAULT '' COMMENT 'ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ Ð³Ñ€ÑƒÐ¿Ð¿Ñ‹ (Ñ€ÑƒÑ)',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='Ð“Ñ€ÑƒÐ¿Ð¿Ñ‹ Ð´Ð°Ð½Ð½Ñ‹Ñ…' 
+/*Data for the table `ds_group` */
+/*Table structure for table `ds_history` */
+DROP TABLE IF EXISTS `ds_history` 
+CREATE TABLE `ds_history` (
+  `fk_ds_list` int(10) unsigned NOT NULL,
+  `value` varchar(80) NOT NULL DEFAULT '' COMMENT 'Ð—Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸',
+  `create_date` datetime NOT NULL COMMENT 'Ð’Ñ€ÐµÐ¼Ñ ÑÐ¾Ñ…Ñ€Ð°Ð½ÐµÐ½Ð¸Ñ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ',
+  KEY `create_date` (`create_date`),
+  KEY `composite_index` (`fk_ds_list`,`create_date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='Ð?ÑÑ‚Ð¾Ñ€Ð¸Ñ ÑÑ‡ÐµÐµÐº (ÑÑ‚Ð°Ñ‚Ð¸ÑÑ‚Ð¸ÐºÐ°)' 
+/*Data for the table `ds_history` */
+/*Table structure for table `ds_list` */
+DROP TABLE IF EXISTS `ds_list` 
+CREATE TABLE `ds_list` (
+  `id` varchar(255) NOT NULL COMMENT 'project.object.cell',
+  `id_hash` int(10) unsigned NOT NULL COMMENT 'Hash Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ Ð´Ð»Ñ Ð¿Ð¾Ð»Ñ id',
+  `fk_ds_group` varchar(255) DEFAULT NULL,
+  `fk_object` varchar(255) NOT NULL,
+  `type` varchar(10) NOT NULL COMMENT 'Ð¢Ð¸Ð¿ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ (str, float, int, uint, date, bool)',
+  `value` varchar(80) NOT NULL DEFAULT '' COMMENT 'Ð—Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸',
+  `update_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Ð’Ñ€ÐµÐ¼Ñ Ð¾Ð±Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ñ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ',
+  `descr` varchar(255) DEFAULT NULL COMMENT 'ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸ (Ñ€ÑƒÑ)',
+  `csd_changed` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Ð?ÑÐ¿Ð¾Ð»ÑŒÐ·ÑƒÐµÑ‚ÑÑ Ð² Ð¿Ñ€Ð¾ÐµÐºÑ‚Ðµ sync',
+  `has_history` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1 - Ð½ÐµÐ¾Ð±Ñ…Ð¾Ð´Ð¸Ð¼Ð¾ Ð²ÐµÑÑ‚Ð¸ Ð¸ÑÑ‚Ð¾Ñ€Ð¸ÑŽ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ð° ',
+  PRIMARY KEY (`id_hash`),
+  UNIQUE KEY `id` (`id`),
+  KEY `fk_group` (`fk_ds_group`),
+  KEY `FK_ds_list_object` (`fk_object`),
+  CONSTRAINT `FK_ds_list_object` FOREIGN KEY (`fk_object`) REFERENCES `object` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='Ð¯Ñ‡ÐµÐ¹ÐºÐ¸ Ð´Ð°Ð½Ð½Ñ‹Ñ…' 
+/*Data for the table `ds_list` */
+/*Table structure for table `object` */
+DROP TABLE IF EXISTS `object` 
+CREATE TABLE `object` (
+  `id` varchar(255) NOT NULL DEFAULT '' COMMENT 'project.object',
+  `fk_project` varchar(255) NOT NULL DEFAULT '',
+  `name` varchar(80) NOT NULL DEFAULT '' COMMENT 'ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ Ð¾Ð±ÑŠÐµÐºÑ‚Ð° (Ñ€ÑƒÑ)',
+  PRIMARY KEY (`id`),
+  KEY `FK_object` (`fk_project`),
+  CONSTRAINT `FK_object_project` FOREIGN KEY (`fk_project`) REFERENCES `project` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='ÐžÐ±ÑŠÐµÐºÑ‚Ñ‹' 
+/*Data for the table `object` */
+/*Table structure for table `project` */
+DROP TABLE IF EXISTS `project` 
+CREATE TABLE `project` (
+  `id` varchar(255) NOT NULL DEFAULT '' COMMENT 'project',
+  `name` varchar(80) NOT NULL DEFAULT '' COMMENT 'ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ Ð¿Ñ€Ð¾ÐµÐºÑ‚Ð° (Ñ€ÑƒÑ)',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='ÐŸÑ€Ð¾ÐµÐºÑ‚Ñ‹' 
+/*Data for the table `project` */
+/* Procedure structure for procedure `update_cell` */
+/*!50003 DROP PROCEDURE IF EXISTS  `update_cell` */ 
+-- Ð½Ð°Ð¸Ð¼ÐµÐ½ÑŒÑˆÐ¸Ð¹ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ñ‹Ð¹ Ð³Ð¾Ð´ Ð² Ð´Ð°Ñ‚Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸
+-- SYSDATE + HIGH_BOUND_DELTA_MIN = Ð½Ð°Ð¸Ð±Ð¾Ð»ÑŒÑˆÐ°Ñ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ð°Ñ Ð´Ð°Ñ‚Ð° ÑÑ‡ÐµÐ¹ÐºÐ¸
+-- Ð¾Ñ‚ÑÐµÐºÐ°ÐµÐ¼ Ð´Ð°Ñ‚Ñ‹ Ð²Ð½Ðµ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ð¾Ð³Ð¾ Ð´Ð¸Ð°Ð¿Ð¾Ð·Ð¾Ð½Ð°
+-- Ð¿Ð¾Ð»ÑƒÑ‡Ð°ÐµÐ¼ Ð¿Ð¾ÑÐ»ÐµÐ´Ð½ÐµÐµ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸
+/*!50003 CREATE DEFINER=`root`@`localhost` PROCEDURE `update_cell`(IN cell_id VARCHAR(255), IN cell_value VARCHAR(255), IN cell_date DATETIME)
+BEGIN
+    DECLARE LOW_BOUND_YEAR INT DEFAULT 2009;
+    DECLARE HIGH_BOUND_DELTA_MIN INT DEFAULT 360;
+    IF (YEAR(cell_date) >= LOW_BOUND_YEAR) AND (cell_date <= NOW() + INTERVAL HIGH_BOUND_DELTA_MIN MINUTE) THEN
+    BEGIN
+	DECLARE ldatetime DATETIME;
+	DECLARE lvalue VARCHAR(255);		
+	DECLARE hasHistory BOOL;
+	DECLARE idHash INT(10) UNSIGNED;
+	START TRANSACTION;
+	SELECT update_date,value,has_history,id_hash INTO ldatetime,lvalue,hasHistory,idHash FROM ds_list WHERE id=cell_id LIMIT 1;
+	IF (cell_date < ldatetime) AND (ldatetime < NOW()) THEN
+	BEGIN
+	    IF hasHistory THEN
+		INSERT INTO ds_history (fk_ds_list,value,create_date) VALUES (idHash, cell_value, cell_date);
+	    END IF;	
+	END;
+	ELSE BEGIN
+	    IF hasHistory THEN
+	    BEGIN	
+		INSERT INTO ds_history (fk_ds_list,value,create_date) VALUES (idHash, lvalue, ldatetime);
+	    END;	
+	    END IF;
+	    UPDATE ds_list SET update_date=cell_date, value=cell_value, csd_changed=1 WHERE id=cell_id;
+	END;
+	END IF;
+	COMMIT;
+    END;
+    END IF;
+END */ 
+/* Procedure structure for procedure `update_cells` */
+/*!50003 DROP PROCEDURE IF EXISTS  `update_cells` */ 
+-- Ð½Ð°Ð¸Ð¼ÐµÐ½ÑŒÑˆÐ¸Ð¹ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ñ‹Ð¹ Ð³Ð¾Ð´ Ð² Ð´Ð°Ñ‚Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸
+-- SYSDATE + HIGH_BOUND_DELTA_MIN = Ð½Ð°Ð¸Ð±Ð¾Ð»ÑŒÑˆÐ°Ñ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ð°Ñ Ð´Ð°Ñ‚Ð° ÑÑ‡ÐµÐ¹ÐºÐ¸
+-- Ð¾Ñ‚ÑÐµÐºÐ°ÐµÐ¼ Ð´Ð°Ñ‚Ñ‹ Ð²Ð½Ðµ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ð¾Ð³Ð¾ Ð´Ð¸Ð°Ð¿Ð¾Ð·Ð¾Ð½Ð°
+-- Ð¿Ð¾Ð»ÑƒÑ‡Ð°ÐµÐ¼ Ð¿Ð¾ÑÐ»ÐµÐ´Ð½ÐµÐµ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸
+/*!50003 CREATE DEFINER=`root`@`localhost` PROCEDURE `update_cells`(IN cellIds LONGTEXT, IN cellValues LONGTEXT, IN cellDate DATETIME, OUT updatedCellIds LONGTEXT)
+BEGIN
+    DECLARE LOW_BOUND_YEAR INT DEFAULT 2009;
+    DECLARE HIGH_BOUND_DELTA_MIN INT DEFAULT 360;
+    SET updatedCellIds = '';
+    IF (YEAR(cellDate) >= LOW_BOUND_YEAR) AND (cellDate <= NOW() + INTERVAL HIGH_BOUND_DELTA_MIN MINUTE) THEN
+    BEGIN
+	DECLARE _DELIMITER CHAR(2) DEFAULT '&&';
+	DECLARE DELIMITER_LENGTH INT(10) DEFAULT LENGTH(_DELIMITER);
+	DECLARE lastDatetime DATETIME;
+	DECLARE lastValue VARCHAR(255);
+	DECLARE hasHistory BOOL;
+	DECLARE idHash INT(10) UNSIGNED;
+	DECLARE startCellId INT(10) DEFAULT 1;
+	DECLARE stopCellId INT(10) DEFAULT 0;
+	DECLARE startCellValue INT(10) DEFAULT 1;
+	DECLARE stopCellValue INT(10) DEFAULT 0;
+	DECLARE cellId VARCHAR(255);
+	DECLARE cellValue VARCHAR(255);
+	START TRANSACTION;
+loopLabel: LOOP
+	SET stopCellId = LOCATE(_DELIMITER, cellIds, startCellId);
+	SET stopCellValue = LOCATE(_DELIMITER, cellValues, startCellValue);
+	IF stopCellId = 0 THEN
+	BEGIN
+	    SET cellId = SUBSTRING(cellIds, startCellId);
+	    SET cellValue = SUBSTRING(cellValues, startCellValue);
+	END;
+	ELSE BEGIN
+	    SET cellId = SUBSTRING(cellIds, startCellId, stopCellId - startCellId);
+	    SET cellValue = SUBSTRING(cellValues, startCellValue, stopCellValue - startCellValue);
+	END;
+	END IF;
+	SELECT update_date, value, has_history, id_hash 
+	    INTO lastDatetime, lastValue, hasHistory, idHash 
+	FROM ds_list WHERE id=cellId LIMIT 1;
+	IF (cellDate < lastDatetime) AND (lastDatetime < NOW()) THEN
+	BEGIN
+	    IF hasHistory THEN
+		INSERT INTO ds_history (fk_ds_list, value, create_date) VALUES (idHash, cellValue, cellDate);
+	    END IF;	
+	END;
+	ELSE BEGIN
+	    IF hasHistory THEN
+	    BEGIN	
+	        INSERT INTO ds_history (fk_ds_list, value, create_date) VALUES (idHash, lastValue, lastDatetime);
+	    END;	
+	    END IF;
+	    UPDATE ds_list SET update_date=cellDate, value=cellValue, csd_changed=1 WHERE id=cellId;
+	    IF (LENGTH(updatedCellIds) = 0) THEN
+	    BEGIN
+	        SET updatedCellIds = cellId;
+	    END;
+	    ELSE BEGIN
+	        SET updatedCellIds = CONCAT(updatedCel
+-------
+01/54/2017 19:54:37
+-------
+
+/*
+SQLyog Ultimate v8.5 
+MySQL - 5.5.23 : Database - zepk_kns_pro
+*********************************************************************
+*/
+/*!40101 SET NAMES utf8 */ 
+/*!40101 SET SQL_MODE=''*/ 
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */ 
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */ 
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */ 
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */ 
+/*Table structure for table `ds_group` */
+DROP TABLE IF EXISTS `ds_group` 
+CREATE TABLE `ds_group` (
+  `id` varchar(255) NOT NULL,
+  `relation` varchar(255) DEFAULT NULL COMMENT 'Ð Ð¾Ð´Ð¸Ñ‚ÐµÐ»ÑŒÑÐºÐ°Ñ Ð³Ñ€ÑƒÐ¿Ð¿Ð°',
+  `name` varchar(80) NOT NULL DEFAULT '' COMMENT 'ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ Ð³Ñ€ÑƒÐ¿Ð¿Ñ‹ (Ñ€ÑƒÑ)',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='Ð“Ñ€ÑƒÐ¿Ð¿Ñ‹ Ð´Ð°Ð½Ð½Ñ‹Ñ…' 
+/*Data for the table `ds_group` */
+/*Table structure for table `ds_history` */
+DROP TABLE IF EXISTS `ds_history` 
+CREATE TABLE `ds_history` (
+  `fk_ds_list` int(10) unsigned NOT NULL,
+  `value` varchar(80) NOT NULL DEFAULT '' COMMENT 'Ð—Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸',
+  `create_date` datetime NOT NULL COMMENT 'Ð’Ñ€ÐµÐ¼Ñ ÑÐ¾Ñ…Ñ€Ð°Ð½ÐµÐ½Ð¸Ñ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ',
+  KEY `create_date` (`create_date`),
+  KEY `composite_index` (`fk_ds_list`,`create_date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='Ð?ÑÑ‚Ð¾Ñ€Ð¸Ñ ÑÑ‡ÐµÐµÐº (ÑÑ‚Ð°Ñ‚Ð¸ÑÑ‚Ð¸ÐºÐ°)' 
+/*Data for the table `ds_history` */
+/*Table structure for table `ds_list` */
+DROP TABLE IF EXISTS `ds_list` 
+CREATE TABLE `ds_list` (
+  `id` varchar(255) NOT NULL COMMENT 'project.object.cell',
+  `id_hash` int(10) unsigned NOT NULL COMMENT 'Hash Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ Ð´Ð»Ñ Ð¿Ð¾Ð»Ñ id',
+  `fk_ds_group` varchar(255) DEFAULT NULL,
+  `fk_object` varchar(255) NOT NULL,
+  `type` varchar(10) NOT NULL COMMENT 'Ð¢Ð¸Ð¿ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ (str, float, int, uint, date, bool)',
+  `value` varchar(80) NOT NULL DEFAULT '' COMMENT 'Ð—Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸',
+  `update_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Ð’Ñ€ÐµÐ¼Ñ Ð¾Ð±Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ñ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ',
+  `descr` varchar(255) DEFAULT NULL COMMENT 'ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸ (Ñ€ÑƒÑ)',
+  `csd_changed` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Ð?ÑÐ¿Ð¾Ð»ÑŒÐ·ÑƒÐµÑ‚ÑÑ Ð² Ð¿Ñ€Ð¾ÐµÐºÑ‚Ðµ sync',
+  `has_history` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1 - Ð½ÐµÐ¾Ð±Ñ…Ð¾Ð´Ð¸Ð¼Ð¾ Ð²ÐµÑÑ‚Ð¸ Ð¸ÑÑ‚Ð¾Ñ€Ð¸ÑŽ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ð° ',
+  PRIMARY KEY (`id_hash`),
+  UNIQUE KEY `id` (`id`),
+  KEY `fk_group` (`fk_ds_group`),
+  KEY `FK_ds_list_object` (`fk_object`),
+  CONSTRAINT `FK_ds_list_object` FOREIGN KEY (`fk_object`) REFERENCES `object` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='Ð¯Ñ‡ÐµÐ¹ÐºÐ¸ Ð´Ð°Ð½Ð½Ñ‹Ñ…' 
+/*Data for the table `ds_list` */
+/*Table structure for table `object` */
+DROP TABLE IF EXISTS `object` 
+CREATE TABLE `object` (
+  `id` varchar(255) NOT NULL DEFAULT '' COMMENT 'project.object',
+  `fk_project` varchar(255) NOT NULL DEFAULT '',
+  `name` varchar(80) NOT NULL DEFAULT '' COMMENT 'ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ Ð¾Ð±ÑŠÐµÐºÑ‚Ð° (Ñ€ÑƒÑ)',
+  PRIMARY KEY (`id`),
+  KEY `FK_object` (`fk_project`),
+  CONSTRAINT `FK_object_project` FOREIGN KEY (`fk_project`) REFERENCES `project` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='ÐžÐ±ÑŠÐµÐºÑ‚Ñ‹' 
+/*Data for the table `object` */
+/*Table structure for table `project` */
+DROP TABLE IF EXISTS `project` 
+CREATE TABLE `project` (
+  `id` varchar(255) NOT NULL DEFAULT '' COMMENT 'project',
+  `name` varchar(80) NOT NULL DEFAULT '' COMMENT 'ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ Ð¿Ñ€Ð¾ÐµÐºÑ‚Ð° (Ñ€ÑƒÑ)',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='ÐŸÑ€Ð¾ÐµÐºÑ‚Ñ‹' 
+/*Data for the table `project` */
+/* Procedure structure for procedure `update_cell` */
+/*!50003 DROP PROCEDURE IF EXISTS  `update_cell` */ 
+-- Ð½Ð°Ð¸Ð¼ÐµÐ½ÑŒÑˆÐ¸Ð¹ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ñ‹Ð¹ Ð³Ð¾Ð´ Ð² Ð´Ð°Ñ‚Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸
+-- SYSDATE + HIGH_BOUND_DELTA_MIN = Ð½Ð°Ð¸Ð±Ð¾Ð»ÑŒÑˆÐ°Ñ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ð°Ñ Ð´Ð°Ñ‚Ð° ÑÑ‡ÐµÐ¹ÐºÐ¸
+-- Ð¾Ñ‚ÑÐµÐºÐ°ÐµÐ¼ Ð´Ð°Ñ‚Ñ‹ Ð²Ð½Ðµ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ð¾Ð³Ð¾ Ð´Ð¸Ð°Ð¿Ð¾Ð·Ð¾Ð½Ð°
+-- Ð¿Ð¾Ð»ÑƒÑ‡Ð°ÐµÐ¼ Ð¿Ð¾ÑÐ»ÐµÐ´Ð½ÐµÐµ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸
+/*!50003 CREATE DEFINER=`root`@`localhost` PROCEDURE `update_cell`(IN cell_id VARCHAR(255), IN cell_value VARCHAR(255), IN cell_date DATETIME)
+BEGIN
+    DECLARE LOW_BOUND_YEAR INT DEFAULT 2009;
+    DECLARE HIGH_BOUND_DELTA_MIN INT DEFAULT 360;
+    IF (YEAR(cell_date) >= LOW_BOUND_YEAR) AND (cell_date <= NOW() + INTERVAL HIGH_BOUND_DELTA_MIN MINUTE) THEN
+    BEGIN
+	DECLARE ldatetime DATETIME;
+	DECLARE lvalue VARCHAR(255);		
+	DECLARE hasHistory BOOL;
+	DECLARE idHash INT(10) UNSIGNED;
+	START TRANSACTION;
+	SELECT update_date,value,has_history,id_hash INTO ldatetime,lvalue,hasHistory,idHash FROM ds_list WHERE id=cell_id LIMIT 1;
+	IF (cell_date < ldatetime) AND (ldatetime < NOW()) THEN
+	BEGIN
+	    IF hasHistory THEN
+		INSERT INTO ds_history (fk_ds_list,value,create_date) VALUES (idHash, cell_value, cell_date);
+	    END IF;	
+	END;
+	ELSE BEGIN
+	    IF hasHistory THEN
+	    BEGIN	
+		INSERT INTO ds_history (fk_ds_list,value,create_date) VALUES (idHash, lvalue, ldatetime);
+	    END;	
+	    END IF;
+	    UPDATE ds_list SET update_date=cell_date, value=cell_value, csd_changed=1 WHERE id=cell_id;
+	END;
+	END IF;
+	COMMIT;
+    END;
+    END IF;
+END */ 
+/* Procedure structure for procedure `update_cells` */
+/*!50003 DROP PROCEDURE IF EXISTS  `update_cells` */ 
+-- Ð½Ð°Ð¸Ð¼ÐµÐ½ÑŒÑˆÐ¸Ð¹ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ñ‹Ð¹ Ð³Ð¾Ð´ Ð² Ð´Ð°Ñ‚Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸
+-- SYSDATE + HIGH_BOUND_DELTA_MIN = Ð½Ð°Ð¸Ð±Ð¾Ð»ÑŒÑˆÐ°Ñ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ð°Ñ Ð´Ð°Ñ‚Ð° ÑÑ‡ÐµÐ¹ÐºÐ¸
+-- Ð¾Ñ‚ÑÐµÐºÐ°ÐµÐ¼ Ð´Ð°Ñ‚Ñ‹ Ð²Ð½Ðµ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ð¾Ð³Ð¾ Ð´Ð¸Ð°Ð¿Ð¾Ð·Ð¾Ð½Ð°
+-- Ð¿Ð¾Ð»ÑƒÑ‡Ð°ÐµÐ¼ Ð¿Ð¾ÑÐ»ÐµÐ´Ð½ÐµÐµ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸
+/*!50003 CREATE DEFINER=`root`@`localhost` PROCEDURE `update_cells`(IN cellIds LONGTEXT, IN cellValues LONGTEXT, IN cellDate DATETIME, OUT updatedCellIds LONGTEXT)
+BEGIN
+    DECLARE LOW_BOUND_YEAR INT DEFAULT 2009;
+    DECLARE HIGH_BOUND_DELTA_MIN INT DEFAULT 360;
+    SET updatedCellIds = '';
+    IF (YEAR(cellDate) >= LOW_BOUND_YEAR) AND (cellDate <= NOW() + INTERVAL HIGH_BOUND_DELTA_MIN MINUTE) THEN
+    BEGIN
+	DECLARE _DELIMITER CHAR(2) DEFAULT '&&';
+	DECLARE DELIMITER_LENGTH INT(10) DEFAULT LENGTH(_DELIMITER);
+	DECLARE lastDatetime DATETIME;
+	DECLARE lastValue VARCHAR(255);
+	DECLARE hasHistory BOOL;
+	DECLARE idHash INT(10) UNSIGNED;
+	DECLARE startCellId INT(10) DEFAULT 1;
+	DECLARE stopCellId INT(10) DEFAULT 0;
+	DECLARE startCellValue INT(10) DEFAULT 1;
+	DECLARE stopCellValue INT(10) DEFAULT 0;
+	DECLARE cellId VARCHAR(255);
+	DECLARE cellValue VARCHAR(255);
+	START TRANSACTION;
+loopLabel: LOOP
+	SET stopCellId = LOCATE(_DELIMITER, cellIds, startCellId);
+	SET stopCellValue = LOCATE(_DELIMITER, cellValues, startCellValue);
+	IF stopCellId = 0 THEN
+	BEGIN
+	    SET cellId = SUBSTRING(cellIds, startCellId);
+	    SET cellValue = SUBSTRING(cellValues, startCellValue);
+	END;
+	ELSE BEGIN
+	    SET cellId = SUBSTRING(cellIds, startCellId, stopCellId - startCellId);
+	    SET cellValue = SUBSTRING(cellValues, startCellValue, stopCellValue - startCellValue);
+	END;
+	END IF;
+	SELECT update_date, value, has_history, id_hash 
+	    INTO lastDatetime, lastValue, hasHistory, idHash 
+	FROM ds_list WHERE id=cellId LIMIT 1;
+	IF (cellDate < lastDatetime) AND (lastDatetime < NOW()) THEN
+	BEGIN
+	    IF hasHistory THEN
+		INSERT INTO ds_history (fk_ds_list, value, create_date) VALUES (idHash, cellValue, cellDate);
+	    END IF;	
+	END;
+	ELSE BEGIN
+	    IF hasHistory THEN
+	    BEGIN	
+	        INSERT INTO ds_history (fk_ds_list, value, create_date) VALUES (idHash, lastValue, lastDatetime);
+	    END;	
+	    END IF;
+	    UPDATE ds_list SET update_date=cellDate, value=cellValue, csd_changed=1 WHERE id=cellId;
+	    IF (LENGTH(updatedCellIds) = 0) THEN
+	    BEGIN
+	        SET updatedCellIds = cellId;
+	    END;
+	    ELSE BEGIN
+	        SET updatedCellIds = CONCAT(updatedCellIds, ',', cellId);
+	    END;
+	    END IF;
+	END;
+	END IF;
+	IF stopCellId = 0 THEN
+	BEGIN
+	    LEAVE loopLabel;
+	END;
+	ELSE BEGIN
+	    SET startCellId = stopCellId + DELIMITER_LENGTH;
+	    SET startCellValue = stopCellValue + DELIMITER_LENGTH;
+	END;
+	END IF;
+	END LOOP;
+	COMMIT;
+    END;
+    END IF;
+END */ 
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */ 
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */ 
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */ 
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */ 
+
+
+-------
+01/58/2017 19:58:49
+-------
+
+/*
+SQLyog Ultimate v8.5 
+MySQL - 5.5.23 : Database - zepk_kns_pro
+*********************************************************************
+*/
+/*!40101 SET NAMES utf8 */ 
+/*!40101 SET SQL_MODE=''*/ 
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */ 
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */ 
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */ 
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */ 
+/*Table structure for table `ds_group` */
+DROP TABLE IF EXISTS `ds_group` 
+CREATE TABLE `ds_group` (
+  `id` varchar(255) NOT NULL,
+  `relation` varchar(255) DEFAULT NULL COMMENT 'Ð Ð¾Ð´Ð¸Ñ‚ÐµÐ»ÑŒÑÐºÐ°Ñ Ð³Ñ€ÑƒÐ¿Ð¿Ð°',
+  `name` varchar(80) NOT NULL DEFAULT '' COMMENT 'ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ Ð³Ñ€ÑƒÐ¿Ð¿Ñ‹ (Ñ€ÑƒÑ)',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='Ð“Ñ€ÑƒÐ¿Ð¿Ñ‹ Ð´Ð°Ð½Ð½Ñ‹Ñ…' 
+/*Data for the table `ds_group` */
+/*Table structure for table `ds_history` */
+DROP TABLE IF EXISTS `ds_history` 
+CREATE TABLE `ds_history` (
+  `fk_ds_list` int(10) unsigned NOT NULL,
+  `value` varchar(80) NOT NULL DEFAULT '' COMMENT 'Ð—Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸',
+  `create_date` datetime NOT NULL COMMENT 'Ð’Ñ€ÐµÐ¼Ñ ÑÐ¾Ñ…Ñ€Ð°Ð½ÐµÐ½Ð¸Ñ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ',
+  KEY `create_date` (`create_date`),
+  KEY `composite_index` (`fk_ds_list`,`create_date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='Ð?ÑÑ‚Ð¾Ñ€Ð¸Ñ ÑÑ‡ÐµÐµÐº (ÑÑ‚Ð°Ñ‚Ð¸ÑÑ‚Ð¸ÐºÐ°)' 
+/*Data for the table `ds_history` */
+/*Table structure for table `ds_list` */
+DROP TABLE IF EXISTS `ds_list` 
+CREATE TABLE `ds_list` (
+  `id` varchar(255) NOT NULL COMMENT 'project.object.cell',
+  `id_hash` int(10) unsigned NOT NULL COMMENT 'Hash Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ Ð´Ð»Ñ Ð¿Ð¾Ð»Ñ id',
+  `fk_ds_group` varchar(255) DEFAULT NULL,
+  `fk_object` varchar(255) NOT NULL,
+  `type` varchar(10) NOT NULL COMMENT 'Ð¢Ð¸Ð¿ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ (str, float, int, uint, date, bool)',
+  `value` varchar(80) NOT NULL DEFAULT '' COMMENT 'Ð—Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸',
+  `update_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Ð’Ñ€ÐµÐ¼Ñ Ð¾Ð±Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ñ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ',
+  `descr` varchar(255) DEFAULT NULL COMMENT 'ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸ (Ñ€ÑƒÑ)',
+  `csd_changed` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Ð?ÑÐ¿Ð¾Ð»ÑŒÐ·ÑƒÐµÑ‚ÑÑ Ð² Ð¿Ñ€Ð¾ÐµÐºÑ‚Ðµ sync',
+  `has_history` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1 - Ð½ÐµÐ¾Ð±Ñ…Ð¾Ð´Ð¸Ð¼Ð¾ Ð²ÐµÑÑ‚Ð¸ Ð¸ÑÑ‚Ð¾Ñ€Ð¸ÑŽ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ð° ',
+  PRIMARY KEY (`id_hash`),
+  UNIQUE KEY `id` (`id`),
+  KEY `fk_group` (`fk_ds_group`),
+  KEY `FK_ds_list_object` (`fk_object`),
+  CONSTRAINT `FK_ds_list_object` FOREIGN KEY (`fk_object`) REFERENCES `object` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='Ð¯Ñ‡ÐµÐ¹ÐºÐ¸ Ð´Ð°Ð½Ð½Ñ‹Ñ…' 
+/*Data for the table `ds_list` */
+/*Table structure for table `object` */
+DROP TABLE IF EXISTS `object` 
+CREATE TABLE `object` (
+  `id` varchar(255) NOT NULL DEFAULT '' COMMENT 'project.object',
+  `fk_project` varchar(255) NOT NULL DEFAULT '',
+  `name` varchar(80) NOT NULL DEFAULT '' COMMENT 'ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ Ð¾Ð±ÑŠÐµÐºÑ‚Ð° (Ñ€ÑƒÑ)',
+  PRIMARY KEY (`id`),
+  KEY `FK_object` (`fk_project`),
+  CONSTRAINT `FK_object_project` FOREIGN KEY (`fk_project`) REFERENCES `project` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='ÐžÐ±ÑŠÐµÐºÑ‚Ñ‹' 
+/*Data for the table `object` */
+/*Table structure for table `project` */
+DROP TABLE IF EXISTS `project` 
+CREATE TABLE `project` (
+  `id` varchar(255) NOT NULL DEFAULT '' COMMENT 'project',
+  `name` varchar(80) NOT NULL DEFAULT '' COMMENT 'ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ Ð¿Ñ€Ð¾ÐµÐºÑ‚Ð° (Ñ€ÑƒÑ)',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='ÐŸÑ€Ð¾ÐµÐºÑ‚Ñ‹' 
+/*Data for the table `project` */
+/* Procedure structure for procedure `update_cell` */
+/*!50003 DROP PROCEDURE IF EXISTS  `update_cell` */ 
+-- Ð½Ð°Ð¸Ð¼ÐµÐ½ÑŒÑˆÐ¸Ð¹ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ñ‹Ð¹ Ð³Ð¾Ð´ Ð² Ð´Ð°Ñ‚Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸
+-- SYSDATE + HIGH_BOUND_DELTA_MIN = Ð½Ð°Ð¸Ð±Ð¾Ð»ÑŒÑˆÐ°Ñ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ð°Ñ Ð´Ð°Ñ‚Ð° ÑÑ‡ÐµÐ¹ÐºÐ¸
+-- Ð¾Ñ‚ÑÐµÐºÐ°ÐµÐ¼ Ð´Ð°Ñ‚Ñ‹ Ð²Ð½Ðµ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ð¾Ð³Ð¾ Ð´Ð¸Ð°Ð¿Ð¾Ð·Ð¾Ð½Ð°
+-- Ð¿Ð¾Ð»ÑƒÑ‡Ð°ÐµÐ¼ Ð¿Ð¾ÑÐ»ÐµÐ´Ð½ÐµÐµ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸
+/*!50003 CREATE DEFINER=`root`@`localhost` PROCEDURE `update_cell`(IN cell_id VARCHAR(255), IN cell_value VARCHAR(255), IN cell_date DATETIME)
+BEGIN
+    DECLARE LOW_BOUND_YEAR INT DEFAULT 2009;
+    DECLARE HIGH_BOUND_DELTA_MIN INT DEFAULT 360;
+    IF (YEAR(cell_date) >= LOW_BOUND_YEAR) AND (cell_date <= NOW() + INTERVAL HIGH_BOUND_DELTA_MIN MINUTE) THEN
+    BEGIN
+	DECLARE ldatetime DATETIME;
+	DECLARE lvalue VARCHAR(255);		
+	DECLARE hasHistory BOOL;
+	DECLARE idHash INT(10) UNSIGNED;
+	START TRANSACTION;
+	SELECT update_date,value,has_history,id_hash INTO ldatetime,lvalue,hasHistory,idHash FROM ds_list WHERE id=cell_id LIMIT 1;
+	IF (cell_date < ldatetime) AND (ldatetime < NOW()) THEN
+	BEGIN
+	    IF hasHistory THEN
+		INSERT INTO ds_history (fk_ds_list,value,create_date) VALUES (idHash, cell_value, cell_date);
+	    END IF;	
+	END;
+	ELSE BEGIN
+	    IF hasHistory THEN
+	    BEGIN	
+		INSERT INTO ds_history (fk_ds_list,value,create_date) VALUES (idHash, lvalue, ldatetime);
+	    END;	
+	    END IF;
+	    UPDATE ds_list SET update_date=cell_date, value=cell_value, csd_changed=1 WHERE id=cell_id;
+	END;
+	END IF;
+	COMMIT;
+    END;
+    END IF;
+END */ 
+/* Procedure structure for procedure `update_cells` */
+/*!50003 DROP PROCEDURE IF EXISTS  `update_cells` */ 
+-- Ð½Ð°Ð¸Ð¼ÐµÐ½ÑŒÑˆÐ¸Ð¹ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ñ‹Ð¹ Ð³Ð¾Ð´ Ð² Ð´Ð°Ñ‚Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸
+-- SYSDATE + HIGH_BOUND_DELTA_MIN = Ð½Ð°Ð¸Ð±Ð¾Ð»ÑŒÑˆÐ°Ñ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ð°Ñ Ð´Ð°Ñ‚Ð° ÑÑ‡ÐµÐ¹ÐºÐ¸
+-- Ð¾Ñ‚ÑÐµÐºÐ°ÐµÐ¼ Ð´Ð°Ñ‚Ñ‹ Ð²Ð½Ðµ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ð¾Ð³Ð¾ Ð´Ð¸Ð°Ð¿Ð¾Ð·Ð¾Ð½Ð°
+-- Ð¿Ð¾Ð»ÑƒÑ‡Ð°ÐµÐ¼ Ð¿Ð¾ÑÐ»ÐµÐ´Ð½ÐµÐµ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸
+/*!50003 CREATE DEFINER=`root`@`localhost` PROCEDURE `update_cells`(IN cellIds LONGTEXT, IN cellValues LONGTEXT, IN cellDate DATETIME, OUT updatedCellIds LONGTEXT)
+BEGIN
+    DECLARE LOW_BOUND_YEAR INT DEFAULT 2009;
+    DECLARE HIGH_BOUND_DELTA_MIN INT DEFAULT 360;
+    SET updatedCellIds = '';
+    IF (YEAR(cellDate) >= LOW_BOUND_YEAR) AND (cellDate <= NOW() + INTERVAL HIGH_BOUND_DELTA_MIN MINUTE) THEN
+    BEGIN
+	DECLARE _DELIMITER CHAR(2) DEFAULT '&&';
+	DECLARE DELIMITER_LENGTH INT(10) DEFAULT LENGTH(_DELIMITER);
+	DECLARE lastDatetime DATETIME;
+	DECLARE lastValue VARCHAR(255);
+	DECLARE hasHistory BOOL;
+	DECLARE idHash INT(10) UNSIGNED;
+	DECLARE startCellId INT(10) DEFAULT 1;
+	DECLARE stopCellId INT(10) DEFAULT 0;
+	DECLARE startCellValue INT(10) DEFAULT 1;
+	DECLARE stopCellValue INT(10) DEFAULT 0;
+	DECLARE cellId VARCHAR(255);
+	DECLARE cellValue VARCHAR(255);
+	START TRANSACTION;
+loopLabel: LOOP
+	SET stopCellId = LOCATE(_DELIMITER, cellIds, startCellId);
+	SET stopCellValue = LOCATE(_DELIMITER, cellValues, startCellValue);
+	IF stopCellId = 0 THEN
+	BEGIN
+	    SET cellId = SUBSTRING(cellIds, startCellId);
+	    SET cellValue = SUBSTRING(cellValues, startCellValue);
+	END;
+	ELSE BEGIN
+	    SET cellId = SUBSTRING(cellIds, startCellId, stopCellId - startCellId);
+	    SET cellValue = SUBSTRING(cellValues, startCellValue, stopCellValue - startCellValue);
+	END;
+	END IF;
+	SELECT update_date, value, has_history, id_hash 
+	    INTO lastDatetime, lastValue, hasHistory, idHash 
+	FROM ds_list WHERE id=cellId LIMIT 1;
+	IF (cellDate < lastDatetime) AND (lastDatetime < NOW()) THEN
+	BEGIN
+	    IF hasHistory THEN
+		INSERT INTO ds_history (fk_ds_list, value, create_date) VALUES (idHash, cellValue, cellDate);
+	    END IF;	
+	END;
+	ELSE BEGIN
+	    IF hasHistory THEN
+	    BEGIN	
+	        INSERT INTO ds_history (fk_ds_list, value, create_date) VALUES (idHash, lastValue, lastDatetime);
+	    END;	
+	    END IF;
+	    UPDATE ds_list SET update_date=cellDate, value=cellValue, csd_changed=1 WHERE id=cellId;
+	    IF (LENGTH(updatedCellIds) = 0) THEN
+	    BEGIN
+	        SET updatedCellIds = cellId;
+	    END;
+	    ELSE BEGIN
+	        SET updatedCellIds = CONCAT(updatedCellIds, ',', cellId);
+	    END;
+	    END IF;
+	END;
+	END IF;
+	IF stopCellId = 0 THEN
+	BEGIN
+	    LEAVE loopLabel;
+	END;
+	ELSE BEGIN
+	    SET startCellId = stopCellId + DELIMITER_LENGTH;
+	    SET startCellValue = stopCellValue + DELIMITER_LENGTH;
+	END;
+	END IF;
+	END LOOP;
+	COMMIT;
+    END;
+    END IF;
+END */ 
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */ 
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */ 
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */ 
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */ 
+
+
+-------
+01/59/2017 19:59:34
+-------
+
+/*
+SQLyog Ultimate v8.5 
+MySQL - 5.5.23 : Database - zepk_kns_pro
+*********************************************************************
+*/
+/*!40101 SET NAMES utf8 */ 
+/*!40101 SET SQL_MODE=''*/ 
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */ 
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */ 
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */ 
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */ 
+/*Table structure for table `ds_group` */
+DROP TABLE IF EXISTS `ds_group` 
+CREATE TABLE `ds_group` (
+  `id` varchar(255) NOT NULL,
+  `relation` varchar(255) DEFAULT NULL COMMENT 'Ð Ð¾Ð´Ð¸Ñ‚ÐµÐ»ÑŒÑÐºÐ°Ñ Ð³Ñ€ÑƒÐ¿Ð¿Ð°',
+  `name` varchar(80) NOT NULL DEFAULT '' COMMENT 'ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ Ð³Ñ€ÑƒÐ¿Ð¿Ñ‹ (Ñ€ÑƒÑ)',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='Ð“Ñ€ÑƒÐ¿Ð¿Ñ‹ Ð´Ð°Ð½Ð½Ñ‹Ñ…' 
+/*Data for the table `ds_group` */
+/*Table structure for table `ds_history` */
+DROP TABLE IF EXISTS `ds_history` 
+CREATE TABLE `ds_history` (
+  `fk_ds_list` int(10) unsigned NOT NULL,
+  `value` varchar(80) NOT NULL DEFAULT '' COMMENT 'Ð—Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸',
+  `create_date` datetime NOT NULL COMMENT 'Ð’Ñ€ÐµÐ¼Ñ ÑÐ¾Ñ…Ñ€Ð°Ð½ÐµÐ½Ð¸Ñ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ',
+  KEY `create_date` (`create_date`),
+  KEY `composite_index` (`fk_ds_list`,`create_date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='Ð?ÑÑ‚Ð¾Ñ€Ð¸Ñ ÑÑ‡ÐµÐµÐº (ÑÑ‚Ð°Ñ‚Ð¸ÑÑ‚Ð¸ÐºÐ°)' 
+/*Data for the table `ds_history` */
+/*Table structure for table `ds_list` */
+DROP TABLE IF EXISTS `ds_list` 
+CREATE TABLE `ds_list` (
+  `id` varchar(255) NOT NULL COMMENT 'project.object.cell',
+  `id_hash` int(10) unsigned NOT NULL COMMENT 'Hash Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ Ð´Ð»Ñ Ð¿Ð¾Ð»Ñ id',
+  `fk_ds_group` varchar(255) DEFAULT NULL,
+  `fk_object` varchar(255) NOT NULL,
+  `type` varchar(10) NOT NULL COMMENT 'Ð¢Ð¸Ð¿ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ (str, float, int, uint, date, bool)',
+  `value` varchar(80) NOT NULL DEFAULT '' COMMENT 'Ð—Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸',
+  `update_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Ð’Ñ€ÐµÐ¼Ñ Ð¾Ð±Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ñ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ',
+  `descr` varchar(255) DEFAULT NULL COMMENT 'ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸ (Ñ€ÑƒÑ)',
+  `csd_changed` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Ð?ÑÐ¿Ð¾Ð»ÑŒÐ·ÑƒÐµÑ‚ÑÑ Ð² Ð¿Ñ€Ð¾ÐµÐºÑ‚Ðµ sync',
+  `has_history` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1 - Ð½ÐµÐ¾Ð±Ñ…Ð¾Ð´Ð¸Ð¼Ð¾ Ð²ÐµÑÑ‚Ð¸ Ð¸ÑÑ‚Ð¾Ñ€Ð¸ÑŽ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ð° ',
+  PRIMARY KEY (`id_hash`),
+  UNIQUE KEY `id` (`id`),
+  KEY `fk_group` (`fk_ds_group`),
+  KEY `FK_ds_list_object` (`fk_object`),
+  CONSTRAINT `FK_ds_list_object` FOREIGN KEY (`fk_object`) REFERENCES `object` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='Ð¯Ñ‡ÐµÐ¹ÐºÐ¸ Ð´Ð°Ð½Ð½Ñ‹Ñ…' 
+/*Data for the table `ds_list` */
+/*Table structure for table `object` */
+DROP TABLE IF EXISTS `object` 
+CREATE TABLE `object` (
+  `id` varchar(255) NOT NULL DEFAULT '' COMMENT 'project.object',
+  `fk_project` varchar(255) NOT NULL DEFAULT '',
+  `name` varchar(80) NOT NULL DEFAULT '' COMMENT 'ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ Ð¾Ð±ÑŠÐµÐºÑ‚Ð° (Ñ€ÑƒÑ)',
+  PRIMARY KEY (`id`),
+  KEY `FK_object` (`fk_project`),
+  CONSTRAINT `FK_object_project` FOREIGN KEY (`fk_project`) REFERENCES `project` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='ÐžÐ±ÑŠÐµÐºÑ‚Ñ‹' 
+/*Data for the table `object` */
+/*Table structure for table `project` */
+DROP TABLE IF EXISTS `project` 
+CREATE TABLE `project` (
+  `id` varchar(255) NOT NULL DEFAULT '' COMMENT 'project',
+  `name` varchar(80) NOT NULL DEFAULT '' COMMENT 'ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ Ð¿Ñ€Ð¾ÐµÐºÑ‚Ð° (Ñ€ÑƒÑ)',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='ÐŸÑ€Ð¾ÐµÐºÑ‚Ñ‹' 
+/*Data for the table `project` */
+/* Procedure structure for procedure `update_cell` */
+/*!50003 DROP PROCEDURE IF EXISTS  `update_cell` */ 
+-- Ð½Ð°Ð¸Ð¼ÐµÐ½ÑŒÑˆÐ¸Ð¹ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ñ‹Ð¹ Ð³Ð¾Ð´ Ð² Ð´Ð°Ñ‚Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸
+-- SYSDATE + HIGH_BOUND_DELTA_MIN = Ð½Ð°Ð¸Ð±Ð¾Ð»ÑŒÑˆÐ°Ñ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ð°Ñ Ð´Ð°Ñ‚Ð° ÑÑ‡ÐµÐ¹ÐºÐ¸
+-- Ð¾Ñ‚ÑÐµÐºÐ°ÐµÐ¼ Ð´Ð°Ñ‚Ñ‹ Ð²Ð½Ðµ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ð¾Ð³Ð¾ Ð´Ð¸Ð°Ð¿Ð¾Ð·Ð¾Ð½Ð°
+-- Ð¿Ð¾Ð»ÑƒÑ‡Ð°ÐµÐ¼ Ð¿Ð¾ÑÐ»ÐµÐ´Ð½ÐµÐµ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸
+/*!50003 CREATE DEFINER=`root`@`localhost` PROCEDURE `update_cell`(IN cell_id VARCHAR(255), IN cell_value VARCHAR(255), IN cell_date DATETIME)
+BEGIN
+    DECLARE LOW_BOUND_YEAR INT DEFAULT 2009;
+    DECLARE HIGH_BOUND_DELTA_MIN INT DEFAULT 360;
+    IF (YEAR(cell_date) >= LOW_BOUND_YEAR) AND (cell_date <= NOW() + INTERVAL HIGH_BOUND_DELTA_MIN MINUTE) THEN
+    BEGIN
+	DECLARE ldatetime DATETIME;
+	DECLARE lvalue VARCHAR(255);		
+	DECLARE hasHistory BOOL;
+	DECLARE idHash INT(10) UNSIGNED;
+	START TRANSACTION;
+	SELECT update_date,value,has_history,id_hash INTO ldatetime,lvalue,hasHistory,idHash FROM ds_list WHERE id=cell_id LIMIT 1;
+	IF (cell_date < ldatetime) AND (ldatetime < NOW()) THEN
+	BEGIN
+	    IF hasHistory THEN
+		INSERT INTO ds_history (fk_ds_list,value,create_date) VALUES (idHash, cell_value, cell_date);
+	    END IF;	
+	END;
+	ELSE BEGIN
+	    IF hasHistory THEN
+	    BEGIN	
+		INSERT INTO ds_history (fk_ds_list,value,create_date) VALUES (idHash, lvalue, ldatetime);
+	    END;	
+	    END IF;
+	    UPDATE ds_list SET update_date=cell_date, value=cell_value, csd_changed=1 WHERE id=cell_id;
+	END;
+	END IF;
+	COMMIT;
+    END;
+    END IF;
+END */ 
+/* Procedure structure for procedure `update_cells` */
+/*!50003 DROP PROCEDURE IF EXISTS  `update_cells` */ 
+-- Ð½Ð°Ð¸Ð¼ÐµÐ½ÑŒÑˆÐ¸Ð¹ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ñ‹Ð¹ Ð³Ð¾Ð´ Ð² Ð´Ð°Ñ‚Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸
+-- SYSDATE + HIGH_BOUND_DELTA_MIN = Ð½Ð°Ð¸Ð±Ð¾Ð»ÑŒÑˆÐ°Ñ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ð°Ñ Ð´Ð°Ñ‚Ð° ÑÑ‡ÐµÐ¹ÐºÐ¸
+-- Ð¾Ñ‚ÑÐµÐºÐ°ÐµÐ¼ Ð´Ð°Ñ‚Ñ‹ Ð²Ð½Ðµ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ð¾Ð³Ð¾ Ð´Ð¸Ð°Ð¿Ð¾Ð·Ð¾Ð½Ð°
+-- Ð¿Ð¾Ð»ÑƒÑ‡Ð°ÐµÐ¼ Ð¿Ð¾ÑÐ»ÐµÐ´Ð½ÐµÐµ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸
+/*!50003 CREATE DEFINER=`root`@`localhost` PROCEDURE `update_cells`(IN cellIds LONGTEXT, IN cellValues LONGTEXT, IN cellDate DATETIME, OUT updatedCellIds LONGTEXT)
+BEGIN
+    DECLARE LOW_BOUND_YEAR INT DEFAULT 2009;
+    DECLARE HIGH_BOUND_DELTA_MIN INT DEFAULT 360;
+    SET updatedCellIds = '';
+    IF (YEAR(cellDate) >= LOW_BOUND_YEAR) AND (cellDate <= NOW() + INTERVAL HIGH_BOUND_DELTA_MIN MINUTE) THEN
+    BEGIN
+	DECLARE _DELIMITER CHAR(2) DEFAULT '&&';
+	DECLARE DELIMITER_LENGTH INT(10) DEFAULT LENGTH(_DELIMITER);
+	DECLARE lastDatetime DATETIME;
+	DECLARE lastValue VARCHAR(255);
+	DECLARE hasHistory BOOL;
+	DECLARE idHash INT(10) UNSIGNED;
+	DECLARE startCellId INT(10) DEFAULT 1;
+	DECLARE stopCellId INT(10) DEFAULT 0;
+	DECLARE startCellValue INT(10) DEFAULT 1;
+	DECLARE stopCellValue INT(10) DEFAULT 0;
+	DECLARE cellId VARCHAR(255);
+	DECLARE cellValue VARCHAR(255);
+	START TRANSACTION;
+loopLabel: LOOP
+	SET stopCellId = LOCATE(_DELIMITER, cellIds, startCellId);
+	SET stopCellValue = LOCATE(_DELIMITER, cellValues, startCellValue);
+	IF stopCellId = 0 THEN
+	BEGIN
+	    SET cellId = SUBSTRING(cellIds, startCellId);
+	    SET cellValue = SUBSTRING(cellValues, startCellValue);
+	END;
+	ELSE BEGIN
+	    SET cellId = SUBSTRING(cellIds, startCellId, stopCellId - startCellId);
+	    SET cellValue = SUBSTRING(cellValues, startCellValue, stopCellValue - startCellValue);
+	END;
+	END IF;
+	SELECT update_date, value, has_history, id_hash 
+	    INTO lastDatetime, lastValue, hasHistory, idHash 
+	FROM ds_list WHERE id=cellId LIMIT 1;
+	IF (cellDate < lastDatetime) AND (lastDatetime < NOW()) THEN
+	BEGIN
+	    IF hasHistory THEN
+		INSERT INTO ds_history (fk_ds_list, value, create_date) VALUES (idHash, cellValue, cellDate);
+	    END IF;	
+	END;
+	ELSE BEGIN
+	    IF hasHistory THEN
+	    BEGIN	
+	        INSERT INTO ds_history (fk_ds_list, value, create_date) VALUES (idHash, lastValue, lastDatetime);
+	    END;	
+	    END IF;
+	    UPDATE ds_list SET update_date=cellDate, value=cellValue, csd_changed=1 WHERE id=cellId;
+	    IF (LENGTH(updatedCellIds) = 0) THEN
+	    BEGIN
+	        SET updatedCellIds = cellId;
+	    END;
+	    ELSE BEGIN
+	        SET updatedCellIds = CONCAT(updatedCellIds, ',', cellId);
+	    END;
+	    END IF;
+	END;
+	END IF;
+	IF stopCellId = 0 THEN
+	BEGIN
+	    LEAVE loopLabel;
+	END;
+	ELSE BEGIN
+	    SET startCellId = stopCellId + DELIMITER_LENGTH;
+	    SET startCellValue = stopCellValue + DELIMITER_LENGTH;
+	END;
+	END IF;
+	END LOOP;
+	COMMIT;
+    END;
+    END IF;
+END */ 
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */ 
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */ 
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */ 
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */ 
+
+
+-------
+01/22/2017 20:22:47
+-------
+
+/*
+SQLyog Ultimate v8.5 
+MySQL - 5.5.23 : Database - zepk_kns_pro
+*********************************************************************
+*/
+/*!40101 SET NAMES utf8 */ 
+/*!40101 SET SQL_MODE=''*/ 
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */ 
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */ 
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */ 
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */ 
+/*Table structure for table `ds_group` */
+DROP TABLE IF EXISTS `ds_group` 
+CREATE TABLE `ds_group` (
+  `id` varchar(255) NOT NULL,
+  `relation` varchar(255) DEFAULT NULL COMMENT 'Ð Ð¾Ð´Ð¸Ñ‚ÐµÐ»ÑŒÑÐºÐ°Ñ Ð³Ñ€ÑƒÐ¿Ð¿Ð°',
+  `name` varchar(80) NOT NULL DEFAULT '' COMMENT 'ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ Ð³Ñ€ÑƒÐ¿Ð¿Ñ‹ (Ñ€ÑƒÑ)',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='Ð“Ñ€ÑƒÐ¿Ð¿Ñ‹ Ð´Ð°Ð½Ð½Ñ‹Ñ…' 
+/*Data for the table `ds_group` */
+/*Table structure for table `ds_history` */
+DROP TABLE IF EXISTS `ds_history` 
+CREATE TABLE `ds_history` (
+  `fk_ds_list` int(10) unsigned NOT NULL,
+  `value` varchar(80) NOT NULL DEFAULT '' COMMENT 'Ð—Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸',
+  `create_date` datetime NOT NULL COMMENT 'Ð’Ñ€ÐµÐ¼Ñ ÑÐ¾Ñ…Ñ€Ð°Ð½ÐµÐ½Ð¸Ñ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ',
+  KEY `create_date` (`create_date`),
+  KEY `composite_index` (`fk_ds_list`,`create_date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='Ð?ÑÑ‚Ð¾Ñ€Ð¸Ñ ÑÑ‡ÐµÐµÐº (ÑÑ‚Ð°Ñ‚Ð¸ÑÑ‚Ð¸ÐºÐ°)' 
+/*Data for the table `ds_history` */
+/*Table structure for table `ds_list` */
+DROP TABLE IF EXISTS `ds_list` 
+CREATE TABLE `ds_list` (
+  `id` varchar(255) NOT NULL COMMENT 'project.object.cell',
+  `id_hash` int(10) unsigned NOT NULL COMMENT 'Hash Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ Ð´Ð»Ñ Ð¿Ð¾Ð»Ñ id',
+  `fk_ds_group` varchar(255) DEFAULT NULL,
+  `fk_object` varchar(255) NOT NULL,
+  `type` varchar(10) NOT NULL COMMENT 'Ð¢Ð¸Ð¿ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ (str, float, int, uint, date, bool)',
+  `value` varchar(80) NOT NULL DEFAULT '' COMMENT 'Ð—Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸',
+  `update_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Ð’Ñ€ÐµÐ¼Ñ Ð¾Ð±Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ñ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ',
+  `descr` varchar(255) DEFAULT NULL COMMENT 'ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸ (Ñ€ÑƒÑ)',
+  `csd_changed` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Ð?ÑÐ¿Ð¾Ð»ÑŒÐ·ÑƒÐµÑ‚ÑÑ Ð² Ð¿Ñ€Ð¾ÐµÐºÑ‚Ðµ sync',
+  `has_history` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1 - Ð½ÐµÐ¾Ð±Ñ…Ð¾Ð´Ð¸Ð¼Ð¾ Ð²ÐµÑÑ‚Ð¸ Ð¸ÑÑ‚Ð¾Ñ€Ð¸ÑŽ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ð° ',
+  PRIMARY KEY (`id_hash`),
+  UNIQUE KEY `id` (`id`),
+  KEY `fk_group` (`fk_ds_group`),
+  KEY `FK_ds_list_object` (`fk_object`),
+  CONSTRAINT `FK_ds_list_object` FOREIGN KEY (`fk_object`) REFERENCES `object` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='Ð¯Ñ‡ÐµÐ¹ÐºÐ¸ Ð´Ð°Ð½Ð½Ñ‹Ñ…' 
+/*Data for the table `ds_list` */
+/*Table structure for table `object` */
+DROP TABLE IF EXISTS `object` 
+CREATE TABLE `object` (
+  `id` varchar(255) NOT NULL DEFAULT '' COMMENT 'project.object',
+  `fk_project` varchar(255) NOT NULL DEFAULT '',
+  `name` varchar(80) NOT NULL DEFAULT '' COMMENT 'ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ Ð¾Ð±ÑŠÐµÐºÑ‚Ð° (Ñ€ÑƒÑ)',
+  PRIMARY KEY (`id`),
+  KEY `FK_object` (`fk_project`),
+  CONSTRAINT `FK_object_project` FOREIGN KEY (`fk_project`) REFERENCES `project` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='ÐžÐ±ÑŠÐµÐºÑ‚Ñ‹' 
+/*Data for the table `object` */
+/*Table structure for table `project` */
+DROP TABLE IF EXISTS `project` 
+CREATE TABLE `project` (
+  `id` varchar(255) NOT NULL DEFAULT '' COMMENT 'project',
+  `name` varchar(80) NOT NULL DEFAULT '' COMMENT 'ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ Ð¿Ñ€Ð¾ÐµÐºÑ‚Ð° (Ñ€ÑƒÑ)',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='ÐŸÑ€Ð¾ÐµÐºÑ‚Ñ‹' 
+/*Data for the table `project` */
+/* Procedure structure for procedure `update_cell` */
+/*!50003 DROP PROCEDURE IF EXISTS  `update_cell` */ 
+-- Ð½Ð°Ð¸Ð¼ÐµÐ½ÑŒÑˆÐ¸Ð¹ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ñ‹Ð¹ Ð³Ð¾Ð´ Ð² Ð´Ð°Ñ‚Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸
+-- SYSDATE + HIGH_BOUND_DELTA_MIN = Ð½Ð°Ð¸Ð±Ð¾Ð»ÑŒÑˆÐ°Ñ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ð°Ñ Ð´Ð°Ñ‚Ð° ÑÑ‡ÐµÐ¹ÐºÐ¸
+-- Ð¾Ñ‚ÑÐµÐºÐ°ÐµÐ¼ Ð´Ð°Ñ‚Ñ‹ Ð²Ð½Ðµ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ð¾Ð³Ð¾ Ð´Ð¸Ð°Ð¿Ð¾Ð·Ð¾Ð½Ð°
+-- Ð¿Ð¾Ð»ÑƒÑ‡Ð°ÐµÐ¼ Ð¿Ð¾ÑÐ»ÐµÐ´Ð½ÐµÐµ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸
+/*!50003 CREATE DEFINER=`root`@`localhost` PROCEDURE `update_cell`(IN cell_id VARCHAR(255), IN cell_value VARCHAR(255), IN cell_date DATETIME)
+BEGIN
+    DECLARE LOW_BOUND_YEAR INT DEFAULT 2009;
+    DECLARE HIGH_BOUND_DELTA_MIN INT DEFAULT 360;
+    IF (YEAR(cell_date) >= LOW_BOUND_YEAR) AND (cell_date <= NOW() + INTERVAL HIGH_BOUND_DELTA_MIN MINUTE) THEN
+    BEGIN
+	DECLARE ldatetime DATETIME;
+	DECLARE lvalue VARCHAR(255);		
+	DECLARE hasHistory BOOL;
+	DECLARE idHash INT(10) UNSIGNED;
+	START TRANSACTION;
+	SELECT update_date,value,has_history,id_hash INTO ldatetime,lvalue,hasHistory,idHash FROM ds_list WHERE id=cell_id LIMIT 1;
+	IF (cell_date < ldatetime) AND (ldatetime < NOW()) THEN
+	BEGIN
+	    IF hasHistory THEN
+		INSERT INTO ds_history (fk_ds_list,value,create_date) VALUES (idHash, cell_value, cell_date);
+	    END IF;	
+	END;
+	ELSE BEGIN
+	    IF hasHistory THEN
+	    BEGIN	
+		INSERT INTO ds_history (fk_ds_list,value,create_date) VALUES (idHash, lvalue, ldatetime);
+	    END;	
+	    END IF;
+	    UPDATE ds_list SET update_date=cell_date, value=cell_value, csd_changed=1 WHERE id=cell_id;
+	END;
+	END IF;
+	COMMIT;
+    END;
+    END IF;
+END */ 
+/* Procedure structure for procedure `update_cells` */
+/*!50003 DROP PROCEDURE IF EXISTS  `update_cells` */ 
+-- Ð½Ð°Ð¸Ð¼ÐµÐ½ÑŒÑˆÐ¸Ð¹ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ñ‹Ð¹ Ð³Ð¾Ð´ Ð² Ð´Ð°Ñ‚Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸
+-- SYSDATE + HIGH_BOUND_DELTA_MIN = Ð½Ð°Ð¸Ð±Ð¾Ð»ÑŒÑˆÐ°Ñ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ð°Ñ Ð´Ð°Ñ‚Ð° ÑÑ‡ÐµÐ¹ÐºÐ¸
+-- Ð¾Ñ‚ÑÐµÐºÐ°ÐµÐ¼ Ð´Ð°Ñ‚Ñ‹ Ð²Ð½Ðµ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ð¾Ð³Ð¾ Ð´Ð¸Ð°Ð¿Ð¾Ð·Ð¾Ð½Ð°
+-- Ð¿Ð¾Ð»ÑƒÑ‡Ð°ÐµÐ¼ Ð¿Ð¾ÑÐ»ÐµÐ´Ð½ÐµÐµ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸
+/*!50003 CREATE DEFINER=`root`@`localhost` PROCEDURE `update_cells`(IN cellIds LONGTEXT, IN cellValues LONGTEXT, IN cellDate DATETIME, OUT updatedCellIds LONGTEXT)
+BEGIN
+    DECLARE LOW_BOUND_YEAR INT DEFAULT 2009;
+    DECLARE HIGH_BOUND_DELTA_MIN INT DEFAULT 360;
+    SET updatedCellIds = '';
+    IF (YEAR(cellDate) >= LOW_BOUND_YEAR) AND (cellDate <= NOW() + INTERVAL HIGH_BOUND_DELTA_MIN MINUTE) THEN
+    BEGIN
+	DECLARE _DELIMITER CHAR(2) DEFAULT '&&';
+	DECLARE DELIMITER_LENGTH INT(10) DEFAULT LENGTH(_DELIMITER);
+	DECLARE lastDatetime DATETIME;
+	DECLARE lastValue VARCHAR(255);
+	DECLARE hasHistory BOOL;
+	DECLARE idHash INT(10) UNSIGNED;
+	DECLARE startCellId INT(10) DEFAULT 1;
+	DECLARE stopCellId INT(10) DEFAULT 0;
+	DECLARE startCellValue INT(10) DEFAULT 1;
+	DECLARE stopCellValue INT(10) DEFAULT 0;
+	DECLARE cellId VARCHAR(255);
+	DECLARE cellValue VARCHAR(255);
+	START TRANSACTION;
+loopLabel: LOOP
+	SET stopCellId = LOCATE(_DELIMITER, cellIds, startCellId);
+	SET stopCellValue = LOCATE(_DELIMITER, cellValues, startCellValue);
+	IF stopCellId = 0 THEN
+	BEGIN
+	    SET cellId = SUBSTRING(cellIds, startCellId);
+	    SET cellValue = SUBSTRING(cellValues, startCellValue);
+	END;
+	ELSE BEGIN
+	    SET cellId = SUBSTRING(cellIds, startCellId, stopCellId - startCellId);
+	    SET cellValue = SUBSTRING(cellValues, startCellValue, stopCellValue - startCellValue);
+	END;
+	END IF;
+	SELECT update_date, value, has_history, id_hash 
+	    INTO lastDatetime, lastValue, hasHistory, idHash 
+	FROM ds_list WHERE id=cellId LIMIT 1;
+	IF (cellDate < lastDatetime) AND (lastDatetime < NOW()) THEN
+	BEGIN
+	    IF hasHistory THEN
+		INSERT INTO ds_history (fk_ds_list, value, create_date) VALUES (idHash, cellValue, cellDate);
+	    END IF;	
+	END;
+	ELSE BEGIN
+	    IF hasHistory THEN
+	    BEGIN	
+	        INSERT INTO ds_history (fk_ds_list, value, create_date) VALUES (idHash, lastValue, lastDatetime);
+	    END;	
+	    END IF;
+	    UPDATE ds_list SET update_date=cellDate, value=cellValue, csd_changed=1 WHERE id=cellId;
+	    IF (LENGTH(updatedCellIds) = 0) THEN
+	    BEGIN
+	        SET updatedCellIds = cellId;
+	    END;
+	    ELSE BEGIN
+	        SET updatedCellIds = CONCAT(updatedCellIds, ',', cellId);
+	    END;
+	    END IF;
+	END;
+	END IF;
+	IF stopCellId = 0 THEN
+	BEGIN
+	    LEAVE loopLabel;
+	END;
+	ELSE BEGIN
+	    SET startCellId = stopCellId + DELIMITER_LENGTH;
+	    SET startCellValue = stopCellValue + DELIMITER_LENGTH;
+	END;
+	END IF;
+	END LOOP;
+	COMMIT;
+    END;
+    END IF;
+END */ 
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */ 
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */ 
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */ 
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */ 
+
+
+-------
+01/35/2017 20:35:11
+-------
+
+/*
+SQLyog Ultimate v8.5 
+MySQL - 5.5.23 : Database - zepk_kns_pro
+*********************************************************************
+*/
+/*!40101 SET NAMES utf8 */ 
+/*!40101 SET SQL_MODE=''*/ 
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */ 
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */ 
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */ 
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */ 
+/*Table structure for table `ds_group` */
+DROP TABLE IF EXISTS `ds_group` 
+CREATE TABLE `ds_group` (
+  `id` varchar(255) NOT NULL,
+  `relation` varchar(255) DEFAULT NULL COMMENT 'Ð Ð¾Ð´Ð¸Ñ‚ÐµÐ»ÑŒÑÐºÐ°Ñ Ð³Ñ€ÑƒÐ¿Ð¿Ð°',
+  `name` varchar(80) NOT NULL DEFAULT '' COMMENT 'ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ Ð³Ñ€ÑƒÐ¿Ð¿Ñ‹ (Ñ€ÑƒÑ)',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='Ð“Ñ€ÑƒÐ¿Ð¿Ñ‹ Ð´Ð°Ð½Ð½Ñ‹Ñ…' 
+/*Data for the table `ds_group` */
+/*Table structure for table `ds_history` */
+DROP TABLE IF EXISTS `ds_history` 
+CREATE TABLE `ds_history` (
+  `fk_ds_list` int(10) unsigned NOT NULL,
+  `value` varchar(80) NOT NULL DEFAULT '' COMMENT 'Ð—Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸',
+  `create_date` datetime NOT NULL COMMENT 'Ð’Ñ€ÐµÐ¼Ñ ÑÐ¾Ñ…Ñ€Ð°Ð½ÐµÐ½Ð¸Ñ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ',
+  KEY `create_date` (`create_date`),
+  KEY `composite_index` (`fk_ds_list`,`create_date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='Ð?ÑÑ‚Ð¾Ñ€Ð¸Ñ ÑÑ‡ÐµÐµÐº (ÑÑ‚Ð°Ñ‚Ð¸ÑÑ‚Ð¸ÐºÐ°)' 
+/*Data for the table `ds_history` */
+/*Table structure for table `ds_list` */
+DROP TABLE IF EXISTS `ds_list` 
+CREATE TABLE `ds_list` (
+  `id` varchar(255) NOT NULL COMMENT 'project.object.cell',
+  `id_hash` int(10) unsigned NOT NULL COMMENT 'Hash Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ Ð´Ð»Ñ Ð¿Ð¾Ð»Ñ id',
+  `fk_ds_group` varchar(255) DEFAULT NULL,
+  `fk_object` varchar(255) NOT NULL,
+  `type` varchar(10) NOT NULL COMMENT 'Ð¢Ð¸Ð¿ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ (str, float, int, uint, date, bool)',
+  `value` varchar(80) NOT NULL DEFAULT '' COMMENT 'Ð—Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸',
+  `update_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Ð’Ñ€ÐµÐ¼Ñ Ð¾Ð±Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ñ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ',
+  `descr` varchar(255) DEFAULT NULL COMMENT 'ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸ (Ñ€ÑƒÑ)',
+  `csd_changed` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Ð?ÑÐ¿Ð¾Ð»ÑŒÐ·ÑƒÐµÑ‚ÑÑ Ð² Ð¿Ñ€Ð¾ÐµÐºÑ‚Ðµ sync',
+  `has_history` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1 - Ð½ÐµÐ¾Ð±Ñ…Ð¾Ð´Ð¸Ð¼Ð¾ Ð²ÐµÑÑ‚Ð¸ Ð¸ÑÑ‚Ð¾Ñ€Ð¸ÑŽ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ð° ',
+  PRIMARY KEY (`id_hash`),
+  UNIQUE KEY `id` (`id`),
+  KEY `fk_group` (`fk_ds_group`),
+  KEY `FK_ds_list_object` (`fk_object`),
+  CONSTRAINT `FK_ds_list_object` FOREIGN KEY (`fk_object`) REFERENCES `object` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='Ð¯Ñ‡ÐµÐ¹ÐºÐ¸ Ð´Ð°Ð½Ð½Ñ‹Ñ…' 
+/*Data for the table `ds_list` */
+/*Table structure for table `object` */
+DROP TABLE IF EXISTS `object` 
+CREATE TABLE `object` (
+  `id` varchar(255) NOT NULL DEFAULT '' COMMENT 'project.object',
+  `fk_project` varchar(255) NOT NULL DEFAULT '',
+  `name` varchar(80) NOT NULL DEFAULT '' COMMENT 'ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ Ð¾Ð±ÑŠÐµÐºÑ‚Ð° (Ñ€ÑƒÑ)',
+  PRIMARY KEY (`id`),
+  KEY `FK_object` (`fk_project`),
+  CONSTRAINT `FK_object_project` FOREIGN KEY (`fk_project`) REFERENCES `project` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='ÐžÐ±ÑŠÐµÐºÑ‚Ñ‹' 
+/*Data for the table `object` */
+/*Table structure for table `project` */
+DROP TABLE IF EXISTS `project` 
+CREATE TABLE `project` (
+  `id` varchar(255) NOT NULL DEFAULT '' COMMENT 'project',
+  `name` varchar(80) NOT NULL DEFAULT '' COMMENT 'ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ Ð¿Ñ€Ð¾ÐµÐºÑ‚Ð° (Ñ€ÑƒÑ)',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='ÐŸÑ€Ð¾ÐµÐºÑ‚Ñ‹' 
+/*Data for the table `project` */
+/* Procedure structure for procedure `update_cell` */
+/*!50003 DROP PROCEDURE IF EXISTS  `update_cell` */ 
+-- Ð½Ð°Ð¸Ð¼ÐµÐ½ÑŒÑˆÐ¸Ð¹ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ñ‹Ð¹ Ð³Ð¾Ð´ Ð² Ð´Ð°Ñ‚Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸
+-- SYSDATE + HIGH_BOUND_DELTA_MIN = Ð½Ð°Ð¸Ð±Ð¾Ð»ÑŒÑˆÐ°Ñ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ð°Ñ Ð´Ð°Ñ‚Ð° ÑÑ‡ÐµÐ¹ÐºÐ¸
+-- Ð¾Ñ‚ÑÐµÐºÐ°ÐµÐ¼ Ð´Ð°Ñ‚Ñ‹ Ð²Ð½Ðµ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ð¾Ð³Ð¾ Ð´Ð¸Ð°Ð¿Ð¾Ð·Ð¾Ð½Ð°
+-- Ð¿Ð¾Ð»ÑƒÑ‡Ð°ÐµÐ¼ Ð¿Ð¾ÑÐ»ÐµÐ´Ð½ÐµÐµ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸
+/*!50003 CREATE DEFINER=`root`@`localhost` PROCEDURE `update_cell`(IN cell_id VARCHAR(255), IN cell_value VARCHAR(255), IN cell_date DATETIME)
+BEGIN
+    DECLARE LOW_BOUND_YEAR INT DEFAULT 2009;
+    DECLARE HIGH_BOUND_DELTA_MIN INT DEFAULT 360;
+    IF (YEAR(cell_date) >= LOW_BOUND_YEAR) AND (cell_date <= NOW() + INTERVAL HIGH_BOUND_DELTA_MIN MINUTE) THEN
+    BEGIN
+	DECLARE ldatetime DATETIME;
+	DECLARE lvalue VARCHAR(255);		
+	DECLARE hasHistory BOOL;
+	DECLARE idHash INT(10) UNSIGNED;
+	START TRANSACTION;
+	SELECT update_date,value,has_history,id_hash INTO ldatetime,lvalue,hasHistory,idHash FROM ds_list WHERE id=cell_id LIMIT 1;
+	IF (cell_date < ldatetime) AND (ldatetime < NOW()) THEN
+	BEGIN
+	    IF hasHistory THEN
+		INSERT INTO ds_history (fk_ds_list,value,create_date) VALUES (idHash, cell_value, cell_date);
+	    END IF;	
+	END;
+	ELSE BEGIN
+	    IF hasHistory THEN
+	    BEGIN	
+		INSERT INTO ds_history (fk_ds_list,value,create_date) VALUES (idHash, lvalue, ldatetime);
+	    END;	
+	    END IF;
+	    UPDATE ds_list SET update_date=cell_date, value=cell_value, csd_changed=1 WHERE id=cell_id;
+	END;
+	END IF;
+	COMMIT;
+    END;
+    END IF;
+END */ 
+/* Procedure structure for procedure `update_cells` */
+/*!50003 DROP PROCEDURE IF EXISTS  `update_cells` */ 
+-- Ð½Ð°Ð¸Ð¼ÐµÐ½ÑŒÑˆÐ¸Ð¹ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ñ‹Ð¹ Ð³Ð¾Ð´ Ð² Ð´Ð°Ñ‚Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸
+-- SYSDATE + HIGH_BOUND_DELTA_MIN = Ð½Ð°Ð¸Ð±Ð¾Ð»ÑŒÑˆÐ°Ñ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ð°Ñ Ð´Ð°Ñ‚Ð° ÑÑ‡ÐµÐ¹ÐºÐ¸
+-- Ð¾Ñ‚ÑÐµÐºÐ°ÐµÐ¼ Ð´Ð°Ñ‚Ñ‹ Ð²Ð½Ðµ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ð¾Ð³Ð¾ Ð´Ð¸Ð°Ð¿Ð¾Ð·Ð¾Ð½Ð°
+-- Ð¿Ð¾Ð»ÑƒÑ‡Ð°ÐµÐ¼ Ð¿Ð¾ÑÐ»ÐµÐ´Ð½ÐµÐµ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸
+/*!50003 CREATE DEFINER=`root`@`localhost` PROCEDURE `update_cells`(IN cellIds LONGTEXT, IN cellValues LONGTEXT, IN cellDate DATETIME, OUT updatedCellIds LONGTEXT)
+BEGIN
+    DECLARE LOW_BOUND_YEAR INT DEFAULT 2009;
+    DECLARE HIGH_BOUND_DELTA_MIN INT DEFAULT 360;
+    SET updatedCellIds = '';
+    IF (YEAR(cellDate) >= LOW_BOUND_YEAR) AND (cellDate <= NOW() + INTERVAL HIGH_BOUND_DELTA_MIN MINUTE) THEN
+    BEGIN
+	DECLARE _DELIMITER CHAR(2) DEFAULT '&&';
+	DECLARE DELIMITER_LENGTH INT(10) DEFAULT LENGTH(_DELIMITER);
+	DECLARE lastDatetime DATETIME;
+	DECLARE lastValue VARCHAR(255);
+	DECLARE hasHistory BOOL;
+	DECLARE idHash INT(10) UNSIGNED;
+	DECLARE startCellId INT(10) DEFAULT 1;
+	DECLARE stopCellId INT(10) DEFAULT 0;
+	DECLARE startCellValue INT(10) DEFAULT 1;
+	DECLARE stopCellValue INT(10) DEFAULT 0;
+	DECLARE cellId VARCHAR(255);
+	DECLARE cellValue VARCHAR(255);
+	START TRANSACTION;
+loopLabel: LOOP
+	SET stopCellId = LOCATE(_DELIMITER, cellIds, startCellId);
+	SET stopCellValue = LOCATE(_DELIMITER, cellValues, startCellValue);
+	IF stopCellId = 0 THEN
+	BEGIN
+	    SET cellId = SUBSTRING(cellIds, startCellId);
+	    SET cellValue = SUBSTRING(cellValues, startCellValue);
+	END;
+	ELSE BEGIN
+	    SET cellId = SUBSTRING(cellIds, startCellId, stopCellId - startCellId);
+	    SET cellValue = SUBSTRING(cellValues, startCellValue, stopCellValue - startCellValue);
+	END;
+	END IF;
+	SELECT update_date, value, has_history, id_hash 
+	    INTO lastDatetime, lastValue, hasHistory, idHash 
+	FROM ds_list WHERE id=cellId LIMIT 1;
+	IF (cellDate < lastDatetime) AND (lastDatetime < NOW()) THEN
+	BEGIN
+	    IF hasHistory THEN
+		INSERT INTO ds_history (fk_ds_list, value, create_date) VALUES (idHash, cellValue, cellDate);
+	    END IF;	
+	END;
+	ELSE BEGIN
+	    IF hasHistory THEN
+	    BEGIN	
+	        INSERT INTO ds_history (fk_ds_list, value, create_date) VALUES (idHash, lastValue, lastDatetime);
+	    END;	
+	    END IF;
+	    UPDATE ds_list SET update_date=cellDate, value=cellValue, csd_changed=1 WHERE id=cellId;
+	    IF (LENGTH(updatedCellIds) = 0) THEN
+	    BEGIN
+	        SET updatedCellIds = cellId;
+	    END;
+	    ELSE BEGIN
+	        SET updatedCellIds = CONCAT(updatedCellIds, ',', cellId);
+	    END;
+	    END IF;
+	END;
+	END IF;
+	IF stopCellId = 0 THEN
+	BEGIN
+	    LEAVE loopLabel;
+	END;
+	ELSE BEGIN
+	    SET startCellId = stopCellId + DELIMITER_LENGTH;
+	    SET startCellValue = stopCellValue + DELIMITER_LENGTH;
+	END;
+	END IF;
+	END LOOP;
+	COMMIT;
+    END;
+    END IF;
+END */ 
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */ 
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */ 
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */ 
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */ 
+
+
+-------
+01/35/2017 20:35:59
+-------
+
+/*
+SQLyog Ultimate v8.5 
+MySQL - 5.5.23 : Database - zepk_kns_pro
+*********************************************************************
+*/
+/*!40101 SET NAMES utf8 */ 
+/*!40101 SET SQL_MODE=''*/ 
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */ 
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */ 
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */ 
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */ 
+/*Table structure for table `ds_group` */
+DROP TABLE IF EXISTS `ds_group` 
+CREATE TABLE `ds_group` (
+  `id` varchar(255) NOT NULL,
+  `relation` varchar(255) DEFAULT NULL COMMENT 'Ð Ð¾Ð´Ð¸Ñ‚ÐµÐ»ÑŒÑÐºÐ°Ñ Ð³Ñ€ÑƒÐ¿Ð¿Ð°',
+  `name` varchar(80) NOT NULL DEFAULT '' COMMENT 'ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ Ð³Ñ€ÑƒÐ¿Ð¿Ñ‹ (Ñ€ÑƒÑ)',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='Ð“Ñ€ÑƒÐ¿Ð¿Ñ‹ Ð´Ð°Ð½Ð½Ñ‹Ñ…' 
+/*Data for the table `ds_group` */
+/*Table structure for table `ds_history` */
+DROP TABLE IF EXISTS `ds_history` 
+CREATE TABLE `ds_history` (
+  `fk_ds_list` int(10) unsigned NOT NULL,
+  `value` varchar(80) NOT NULL DEFAULT '' COMMENT 'Ð—Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸',
+  `create_date` datetime NOT NULL COMMENT 'Ð’Ñ€ÐµÐ¼Ñ ÑÐ¾Ñ…Ñ€Ð°Ð½ÐµÐ½Ð¸Ñ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ',
+  KEY `create_date` (`create_date`),
+  KEY `composite_index` (`fk_ds_list`,`create_date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='Ð?ÑÑ‚Ð¾Ñ€Ð¸Ñ ÑÑ‡ÐµÐµÐº (ÑÑ‚Ð°Ñ‚Ð¸ÑÑ‚Ð¸ÐºÐ°)' 
+/*Data for the table `ds_history` */
+/*Table structure for table `ds_list` */
+DROP TABLE IF EXISTS `ds_list` 
+CREATE TABLE `ds_list` (
+  `id` varchar(255) NOT NULL COMMENT 'project.object.cell',
+  `id_hash` int(10) unsigned NOT NULL COMMENT 'Hash Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ Ð´Ð»Ñ Ð¿Ð¾Ð»Ñ id',
+  `fk_ds_group` varchar(255) DEFAULT NULL,
+  `fk_object` varchar(255) NOT NULL,
+  `type` varchar(10) NOT NULL COMMENT 'Ð¢Ð¸Ð¿ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ (str, float, int, uint, date, bool)',
+  `value` varchar(80) NOT NULL DEFAULT '' COMMENT 'Ð—Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸',
+  `update_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Ð’Ñ€ÐµÐ¼Ñ Ð¾Ð±Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ñ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ',
+  `descr` varchar(255) DEFAULT NULL COMMENT 'ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸ (Ñ€ÑƒÑ)',
+  `csd_changed` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Ð?ÑÐ¿Ð¾Ð»ÑŒÐ·ÑƒÐµÑ‚ÑÑ Ð² Ð¿Ñ€Ð¾ÐµÐºÑ‚Ðµ sync',
+  `has_history` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1 - Ð½ÐµÐ¾Ð±Ñ…Ð¾Ð´Ð¸Ð¼Ð¾ Ð²ÐµÑÑ‚Ð¸ Ð¸ÑÑ‚Ð¾Ñ€Ð¸ÑŽ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ð° ',
+  PRIMARY KEY (`id_hash`),
+  UNIQUE KEY `id` (`id`),
+  KEY `fk_group` (`fk_ds_group`),
+  KEY `FK_ds_list_object` (`fk_object`),
+  CONSTRAINT `FK_ds_list_object` FOREIGN KEY (`fk_object`) REFERENCES `object` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='Ð¯Ñ‡ÐµÐ¹ÐºÐ¸ Ð´Ð°Ð½Ð½Ñ‹Ñ…' 
+/*Data for the table `ds_list` */
+/*Table structure for table `object` */
+DROP TABLE IF EXISTS `object` 
+CREATE TABLE `object` (
+  `id` varchar(255) NOT NULL DEFAULT '' COMMENT 'project.object',
+  `fk_project` varchar(255) NOT NULL DEFAULT '',
+  `name` varchar(80) NOT NULL DEFAULT '' COMMENT 'ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ Ð¾Ð±ÑŠÐµÐºÑ‚Ð° (Ñ€ÑƒÑ)',
+  PRIMARY KEY (`id`),
+  KEY `FK_object` (`fk_project`),
+  CONSTRAINT `FK_object_project` FOREIGN KEY (`fk_project`) REFERENCES `project` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='ÐžÐ±ÑŠÐµÐºÑ‚Ñ‹' 
+/*Data for the table `object` */
+/*Table structure for table `project` */
+DROP TABLE IF EXISTS `project` 
+CREATE TABLE `project` (
+  `id` varchar(255) NOT NULL DEFAULT '' COMMENT 'project',
+  `name` varchar(80) NOT NULL DEFAULT '' COMMENT 'ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ Ð¿Ñ€Ð¾ÐµÐºÑ‚Ð° (Ñ€ÑƒÑ)',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='ÐŸÑ€Ð¾ÐµÐºÑ‚Ñ‹' 
+/*Data for the table `project` */
+/* Procedure structure for procedure `update_cell` */
+/*!50003 DROP PROCEDURE IF EXISTS  `update_cell` */ 
+-- Ð½Ð°Ð¸Ð¼ÐµÐ½ÑŒÑˆÐ¸Ð¹ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ñ‹Ð¹ Ð³Ð¾Ð´ Ð² Ð´Ð°Ñ‚Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸
+-- SYSDATE + HIGH_BOUND_DELTA_MIN = Ð½Ð°Ð¸Ð±Ð¾Ð»ÑŒÑˆÐ°Ñ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ð°Ñ Ð´Ð°Ñ‚Ð° ÑÑ‡ÐµÐ¹ÐºÐ¸
+-- Ð¾Ñ‚ÑÐµÐºÐ°ÐµÐ¼ Ð´Ð°Ñ‚Ñ‹ Ð²Ð½Ðµ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ð¾Ð³Ð¾ Ð´Ð¸Ð°Ð¿Ð¾Ð·Ð¾Ð½Ð°
+-- Ð¿Ð¾Ð»ÑƒÑ‡Ð°ÐµÐ¼ Ð¿Ð¾ÑÐ»ÐµÐ´Ð½ÐµÐµ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸
+/*!50003 CREATE DEFINER=`root`@`localhost` PROCEDURE `update_cell`(IN cell_id VARCHAR(255), IN cell_value VARCHAR(255), IN cell_date DATETIME)
+BEGIN
+    DECLARE LOW_BOUND_YEAR INT DEFAULT 2009;
+    DECLARE HIGH_BOUND_DELTA_MIN INT DEFAULT 360;
+    IF (YEAR(cell_date) >= LOW_BOUND_YEAR) AND (cell_date <= NOW() + INTERVAL HIGH_BOUND_DELTA_MIN MINUTE) THEN
+    BEGIN
+	DECLARE ldatetime DATETIME;
+	DECLARE lvalue VARCHAR(255);		
+	DECLARE hasHistory BOOL;
+	DECLARE idHash INT(10) UNSIGNED;
+	START TRANSACTION;
+	SELECT update_date,value,has_history,id_hash INTO ldatetime,lvalue,hasHistory,idHash FROM ds_list WHERE id=cell_id LIMIT 1;
+	IF (cell_date < ldatetime) AND (ldatetime < NOW()) THEN
+	BEGIN
+	    IF hasHistory THEN
+		INSERT INTO ds_history (fk_ds_list,value,create_date) VALUES (idHash, cell_value, cell_date);
+	    END IF;	
+	END;
+	ELSE BEGIN
+	    IF hasHistory THEN
+	    BEGIN	
+		INSERT INTO ds_history (fk_ds_list,value,create_date) VALUES (idHash, lvalue, ldatetime);
+	    END;	
+	    END IF;
+	    UPDATE ds_list SET update_date=cell_date, value=cell_value, csd_changed=1 WHERE id=cell_id;
+	END;
+	END IF;
+	COMMIT;
+    END;
+    END IF;
+END */ 
+/* Procedure structure for procedure `update_cells` */
+/*!50003 DROP PROCEDURE IF EXISTS  `update_cells` */ 
+-- Ð½Ð°Ð¸Ð¼ÐµÐ½ÑŒÑˆÐ¸Ð¹ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ñ‹Ð¹ Ð³Ð¾Ð´ Ð² Ð´Ð°Ñ‚Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸
+-- SYSDATE + HIGH_BOUND_DELTA_MIN = Ð½Ð°Ð¸Ð±Ð¾Ð»ÑŒÑˆÐ°Ñ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ð°Ñ Ð´Ð°Ñ‚Ð° ÑÑ‡ÐµÐ¹ÐºÐ¸
+-- Ð¾Ñ‚ÑÐµÐºÐ°ÐµÐ¼ Ð´Ð°Ñ‚Ñ‹ Ð²Ð½Ðµ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ð¾Ð³Ð¾ Ð´Ð¸Ð°Ð¿Ð¾Ð·Ð¾Ð½Ð°
+-- Ð¿Ð¾Ð»ÑƒÑ‡Ð°ÐµÐ¼ Ð¿Ð¾ÑÐ»ÐµÐ´Ð½ÐµÐµ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸
+/*!50003 CREATE DEFINER=`root`@`localhost` PROCEDURE `update_cells`(IN cellIds LONGTEXT, IN cellValues LONGTEXT, IN cellDate DATETIME, OUT updatedCellIds LONGTEXT)
+BEGIN
+    DECLARE LOW_BOUND_YEAR INT DEFAULT 2009;
+    DECLARE HIGH_BOUND_DELTA_MIN INT DEFAULT 360;
+    SET updatedCellIds = '';
+    IF (YEAR(cellDate) >= LOW_BOUND_YEAR) AND (cellDate <= NOW() + INTERVAL HIGH_BOUND_DELTA_MIN MINUTE) THEN
+    BEGIN
+	DECLARE _DELIMITER CHAR(2) DEFAULT '&&';
+	DECLARE DELIMITER_LENGTH INT(10) DEFAULT LENGTH(_DELIMITER);
+	DECLARE lastDatetime DATETIME;
+	DECLARE lastValue VARCHAR(255);
+	DECLARE hasHistory BOOL;
+	DECLARE idHash INT(10) UNSIGNED;
+	DECLARE startCellId INT(10) DEFAULT 1;
+	DECLARE stopCellId INT(10) DEFAULT 0;
+	DECLARE startCellValue INT(10) DEFAULT 1;
+	DECLARE stopCellValue INT(10) DEFAULT 0;
+	DECLARE cellId VARCHAR(255);
+	DECLARE cellValue VARCHAR(255);
+	START TRANSACTION;
+loopLabel: LOOP
+	SET stopCellId = LOCATE(_DELIMITER, cellIds, startCellId);
+	SET stopCellValue = LOCATE(_DELIMITER, cellValues, startCellValue);
+	IF stopCellId = 0 THEN
+	BEGIN
+	    SET cellId = SUBSTRING(cellIds, startCellId);
+	    SET cellValue = SUBSTRING(cellValues, startCellValue);
+	END;
+	ELSE BEGIN
+	    SET cellId = SUBSTRING(cellIds, startCellId, stopCellId - startCellId);
+	    SET cellValue = SUBSTRING(cellValues, startCellValue, stopCellValue - startCellValue);
+	END;
+	END IF;
+	SELECT update_date, value, has_history, id_hash 
+	    INTO lastDatetime, lastValue, hasHistory, idHash 
+	FROM ds_list WHERE id=cellId LIMIT 1;
+	IF (cellDate < lastDatetime) AND (lastDatetime < NOW()) THEN
+	BEGIN
+	    IF hasHistory THEN
+		INSERT INTO ds_history (fk_ds_list, value, create_date) VALUES (idHash, cellValue, cellDate);
+	    END IF;	
+	END;
+	ELSE BEGIN
+	    IF hasHistory THEN
+	    BEGIN	
+	        INSERT INTO ds_history (fk_ds_list, value, create_date) VALUES (idHash, lastValue, lastDatetime);
+	    END;	
+	    END IF;
+	    UPDATE ds_list SET update_date=cellDate, value=cellValue, csd_changed=1 WHERE id=cellId;
+	    IF (LENGTH(updatedCellIds) = 0) THEN
+	    BEGIN
+	        SET updatedCellIds = cellId;
+	    END;
+	    ELSE BEGIN
+	        SET updatedCellIds = CONCAT(updatedCellIds, ',', cellId);
+	    END;
+	    END IF;
+	END;
+	END IF;
+	IF stopCellId = 0 THEN
+	BEGIN
+	    LEAVE loopLabel;
+	END;
+	ELSE BEGIN
+	    SET startCellId = stopCellId + DELIMITER_LENGTH;
+	    SET startCellValue = stopCellValue + DELIMITER_LENGTH;
+	END;
+	END IF;
+	END LOOP;
+	COMMIT;
+    END;
+    END IF;
+END */ 
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */ 
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */ 
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */ 
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */ 
+
+
+-------
+01/36/2017 20:36:54
+-------
+
+/*
+SQLyog Ultimate v8.5 
+MySQL - 5.5.23 : Database - zepk_kns_pro
+*********************************************************************
+*/
+/*!40101 SET NAMES utf8 */ 
+/*!40101 SET SQL_MODE=''*/ 
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */ 
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */ 
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */ 
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */ 
+/*Table structure for table `ds_group` */
+DROP TABLE IF EXISTS `ds_group` 
+CREATE TABLE `ds_group` (
+  `id` varchar(255) NOT NULL,
+  `relation` varchar(255) DEFAULT NULL COMMENT 'Ð Ð¾Ð´Ð¸Ñ‚ÐµÐ»ÑŒÑÐºÐ°Ñ Ð³Ñ€ÑƒÐ¿Ð¿Ð°',
+  `name` varchar(80) NOT NULL DEFAULT '' COMMENT 'ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ Ð³Ñ€ÑƒÐ¿Ð¿Ñ‹ (Ñ€ÑƒÑ)',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='Ð“Ñ€ÑƒÐ¿Ð¿Ñ‹ Ð´Ð°Ð½Ð½Ñ‹Ñ…' 
+/*Data for the table `ds_group` */
+/*Table structure for table `ds_history` */
+DROP TABLE IF EXISTS `ds_history` 
+CREATE TABLE `ds_history` (
+  `fk_ds_list` int(10) unsigned NOT NULL,
+  `value` varchar(80) NOT NULL DEFAULT '' COMMENT 'Ð—Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸',
+  `create_date` datetime NOT NULL COMMENT 'Ð’Ñ€ÐµÐ¼Ñ ÑÐ¾Ñ…Ñ€Ð°Ð½ÐµÐ½Ð¸Ñ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ',
+  KEY `create_date` (`create_date`),
+  KEY `composite_index` (`fk_ds_list`,`create_date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='Ð?ÑÑ‚Ð¾Ñ€Ð¸Ñ ÑÑ‡ÐµÐµÐº (ÑÑ‚Ð°Ñ‚Ð¸ÑÑ‚Ð¸ÐºÐ°)' 
+/*Data for the table `ds_history` */
+/*Table structure for table `ds_list` */
+DROP TABLE IF EXISTS `ds_list` 
+CREATE TABLE `ds_list` (
+  `id` varchar(255) NOT NULL COMMENT 'project.object.cell',
+  `id_hash` int(10) unsigned NOT NULL COMMENT 'Hash Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ Ð´Ð»Ñ Ð¿Ð¾Ð»Ñ id',
+  `fk_ds_group` varchar(255) DEFAULT NULL,
+  `fk_object` varchar(255) NOT NULL,
+  `type` varchar(10) NOT NULL COMMENT 'Ð¢Ð¸Ð¿ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ (str, float, int, uint, date, bool)',
+  `value` varchar(80) NOT NULL DEFAULT '' COMMENT 'Ð—Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸',
+  `update_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Ð’Ñ€ÐµÐ¼Ñ Ð¾Ð±Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ñ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ',
+  `descr` varchar(255) DEFAULT NULL COMMENT 'ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸ (Ñ€ÑƒÑ)',
+  `csd_changed` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Ð?ÑÐ¿Ð¾Ð»ÑŒÐ·ÑƒÐµÑ‚ÑÑ Ð² Ð¿Ñ€Ð¾ÐµÐºÑ‚Ðµ sync',
+  `has_history` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1 - Ð½ÐµÐ¾Ð±Ñ…Ð¾Ð´Ð¸Ð¼Ð¾ Ð²ÐµÑÑ‚Ð¸ Ð¸ÑÑ‚Ð¾Ñ€Ð¸ÑŽ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ð° ',
+  PRIMARY KEY (`id_hash`),
+  UNIQUE KEY `id` (`id`),
+  KEY `fk_group` (`fk_ds_group`),
+  KEY `FK_ds_list_object` (`fk_object`),
+  CONSTRAINT `FK_ds_list_object` FOREIGN KEY (`fk_object`) REFERENCES `object` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='Ð¯Ñ‡ÐµÐ¹ÐºÐ¸ Ð´Ð°Ð½Ð½Ñ‹Ñ…' 
+/*Data for the table `ds_list` */
+/*Table structure for table `object` */
+DROP TABLE IF EXISTS `object` 
+CREATE TABLE `object` (
+  `id` varchar(255) NOT NULL DEFAULT '' COMMENT 'project.object',
+  `fk_project` varchar(255) NOT NULL DEFAULT '',
+  `name` varchar(80) NOT NULL DEFAULT '' COMMENT 'ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ Ð¾Ð±ÑŠÐµÐºÑ‚Ð° (Ñ€ÑƒÑ)',
+  PRIMARY KEY (`id`),
+  KEY `FK_object` (`fk_project`),
+  CONSTRAINT `FK_object_project` FOREIGN KEY (`fk_project`) REFERENCES `project` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='ÐžÐ±ÑŠÐµÐºÑ‚Ñ‹' 
+/*Data for the table `object` */
+/*Table structure for table `project` */
+DROP TABLE IF EXISTS `project` 
+CREATE TABLE `project` (
+  `id` varchar(255) NOT NULL DEFAULT '' COMMENT 'project',
+  `name` varchar(80) NOT NULL DEFAULT '' COMMENT 'ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ Ð¿Ñ€Ð¾ÐµÐºÑ‚Ð° (Ñ€ÑƒÑ)',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='ÐŸÑ€Ð¾ÐµÐºÑ‚Ñ‹' 
+/*Data for the table `project` */
+/* Procedure structure for procedure `update_cell` */
+/*!50003 DROP PROCEDURE IF EXISTS  `update_cell` */ 
+-- Ð½Ð°Ð¸Ð¼ÐµÐ½ÑŒÑˆÐ¸Ð¹ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ñ‹Ð¹ Ð³Ð¾Ð´ Ð² Ð´Ð°Ñ‚Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸
+-- SYSDATE + HIGH_BOUND_DELTA_MIN = Ð½Ð°Ð¸Ð±Ð¾Ð»ÑŒÑˆÐ°Ñ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ð°Ñ Ð´Ð°Ñ‚Ð° ÑÑ‡ÐµÐ¹ÐºÐ¸
+-- Ð¾Ñ‚ÑÐµÐºÐ°ÐµÐ¼ Ð´Ð°Ñ‚Ñ‹ Ð²Ð½Ðµ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ð¾Ð³Ð¾ Ð´Ð¸Ð°Ð¿Ð¾Ð·Ð¾Ð½Ð°
+-- Ð¿Ð¾Ð»ÑƒÑ‡Ð°ÐµÐ¼ Ð¿Ð¾ÑÐ»ÐµÐ´Ð½ÐµÐµ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸
+/*!50003 CREATE DEFINER=`root`@`localhost` PROCEDURE `update_cell`(IN cell_id VARCHAR(255), IN cell_value VARCHAR(255), IN cell_date DATETIME)
+BEGIN
+    DECLARE LOW_BOUND_YEAR INT DEFAULT 2009;
+    DECLARE HIGH_BOUND_DELTA_MIN INT DEFAULT 360;
+    IF (YEAR(cell_date) >= LOW_BOUND_YEAR) AND (cell_date <= NOW() + INTERVAL HIGH_BOUND_DELTA_MIN MINUTE) THEN
+    BEGIN
+	DECLARE ldatetime DATETIME;
+	DECLARE lvalue VARCHAR(255);		
+	DECLARE hasHistory BOOL;
+	DECLARE idHash INT(10) UNSIGNED;
+	START TRANSACTION;
+	SELECT update_date,value,has_history,id_hash INTO ldatetime,lvalue,hasHistory,idHash FROM ds_list WHERE id=cell_id LIMIT 1;
+	IF (cell_date < ldatetime) AND (ldatetime < NOW()) THEN
+	BEGIN
+	    IF hasHistory THEN
+		INSERT INTO ds_history (fk_ds_list,value,create_date) VALUES (idHash, cell_value, cell_date);
+	    END IF;	
+	END;
+	ELSE BEGIN
+	    IF hasHistory THEN
+	    BEGIN	
+		INSERT INTO ds_history (fk_ds_list,value,create_date) VALUES (idHash, lvalue, ldatetime);
+	    END;	
+	    END IF;
+	    UPDATE ds_list SET update_date=cell_date, value=cell_value, csd_changed=1 WHERE id=cell_id;
+	END;
+	END IF;
+	COMMIT;
+    END;
+    END IF;
+END */ 
+/* Procedure structure for procedure `update_cells` */
+/*!50003 DROP PROCEDURE IF EXISTS  `update_cells` */ 
+-- Ð½Ð°Ð¸Ð¼ÐµÐ½ÑŒÑˆÐ¸Ð¹ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ñ‹Ð¹ Ð³Ð¾Ð´ Ð² Ð´Ð°Ñ‚Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸
+-- SYSDATE + HIGH_BOUND_DELTA_MIN = Ð½Ð°Ð¸Ð±Ð¾Ð»ÑŒÑˆÐ°Ñ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ð°Ñ Ð´Ð°Ñ‚Ð° ÑÑ‡ÐµÐ¹ÐºÐ¸
+-- Ð¾Ñ‚ÑÐµÐºÐ°ÐµÐ¼ Ð´Ð°Ñ‚Ñ‹ Ð²Ð½Ðµ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ð¾Ð³Ð¾ Ð´Ð¸Ð°Ð¿Ð¾Ð·Ð¾Ð½Ð°
+-- Ð¿Ð¾Ð»ÑƒÑ‡Ð°ÐµÐ¼ Ð¿Ð¾ÑÐ»ÐµÐ´Ð½ÐµÐµ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸
+/*!50003 CREATE DEFINER=`root`@`localhost` PROCEDURE `update_cells`(IN cellIds LONGTEXT, IN cellValues LONGTEXT, IN cellDate DATETIME, OUT updatedCellIds LONGTEXT)
+BEGIN
+    DECLARE LOW_BOUND_YEAR INT DEFAULT 2009;
+    DECLARE HIGH_BOUND_DELTA_MIN INT DEFAULT 360;
+    SET updatedCellIds = '';
+    IF (YEAR(cellDate) >= LOW_BOUND_YEAR) AND (cellDate <= NOW() + INTERVAL HIGH_BOUND_DELTA_MIN MINUTE) THEN
+    BEGIN
+	DECLARE _DELIMITER CHAR(2) DEFAULT '&&';
+	DECLARE DELIMITER_LENGTH INT(10) DEFAULT LENGTH(_DELIMITER);
+	DECLARE lastDatetime DATETIME;
+	DECLARE lastValue VARCHAR(255);
+	DECLARE hasHistory BOOL;
+	DECLARE idHash INT(10) UNSIGNED;
+	DECLARE startCellId INT(10) DEFAULT 1;
+	DECLARE stopCellId INT(10) DEFAULT 0;
+	DECLARE startCellValue INT(10) DEFAULT 1;
+	DECLARE stopCellValue INT(10) DEFAULT 0;
+	DECLARE cellId VARCHAR(255);
+	DECLARE cellValue VARCHAR(255);
+	START TRANSACTION;
+loopLabel: LOOP
+	SET stopCellId = LOCATE(_DELIMITER, cellIds, startCellId);
+	SET stopCellValue = LOCATE(_DELIMITER, cellValues, startCellValue);
+	IF stopCellId = 0 THEN
+	BEGIN
+	    SET cellId = SUBSTRING(cellIds, startCellId);
+	    SET cellValue = SUBSTRING(cellValues, startCellValue);
+	END;
+	ELSE BEGIN
+	    SET cellId = SUBSTRING(cellIds, startCellId, stopCellId - startCellId);
+	    SET cellValue = SUBSTRING(cellValues, startCellValue, stopCellValue - startCellValue);
+	END;
+	END IF;
+	SELECT update_date, value, has_history, id_hash 
+	    INTO lastDatetime, lastValue, hasHistory, idHash 
+	FROM ds_list WHERE id=cellId LIMIT 1;
+	IF (cellDate < lastDatetime) AND (lastDatetime < NOW()) THEN
+	BEGIN
+	    IF hasHistory THEN
+		INSERT INTO ds_history (fk_ds_list, value, create_date) VALUES (idHash, cellValue, cellDate);
+	    END IF;	
+	END;
+	ELSE BEGIN
+	    IF hasHistory THEN
+	    BEGIN	
+	        INSERT INTO ds_history (fk_ds_list, value, create_date) VALUES (idHash, lastValue, lastDatetime);
+	    END;	
+	    END IF;
+	    UPDATE ds_list SET update_date=cellDate, value=cellValue, csd_changed=1 WHERE id=cellId;
+	    IF (LENGTH(updatedCellIds) = 0) THEN
+	    BEGIN
+	        SET updatedCellIds = cellId;
+	    END;
+	    ELSE BEGIN
+	        SET updatedCellIds = CONCAT(updatedCellIds, ',', cellId);
+	    END;
+	    END IF;
+	END;
+	END IF;
+	IF stopCellId = 0 THEN
+	BEGIN
+	    LEAVE loopLabel;
+	END;
+	ELSE BEGIN
+	    SET startCellId = stopCellId + DELIMITER_LENGTH;
+	    SET startCellValue = stopCellValue + DELIMITER_LENGTH;
+	END;
+	END IF;
+	END LOOP;
+	COMMIT;
+    END;
+    END IF;
+END */ 
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */ 
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */ 
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */ 
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */ 
+
+
+-------
+01/37/2017 20:37:33
+-------
+
+/*
+SQLyog Ultimate v8.5 
+MySQL - 5.5.23 : Database - zepk_kns_pro
+*********************************************************************
+*/
+/*!40101 SET NAMES utf8 */ 
+/*!40101 SET SQL_MODE=''*/ 
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */ 
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */ 
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */ 
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */ 
+/*Table structure for table `ds_group` */
+DROP TABLE IF EXISTS `ds_group` 
+CREATE TABLE `ds_group` (
+  `id` varchar(255) NOT NULL,
+  `relation` varchar(255) DEFAULT NULL COMMENT 'Ð Ð¾Ð´Ð¸Ñ‚ÐµÐ»ÑŒÑÐºÐ°Ñ Ð³Ñ€ÑƒÐ¿Ð¿Ð°',
+  `name` varchar(80) NOT NULL DEFAULT '' COMMENT 'ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ Ð³Ñ€ÑƒÐ¿Ð¿Ñ‹ (Ñ€ÑƒÑ)',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='Ð“Ñ€ÑƒÐ¿Ð¿Ñ‹ Ð´Ð°Ð½Ð½Ñ‹Ñ…' 
+/*Data for the table `ds_group` */
+/*Table structure for table `ds_history` */
+DROP TABLE IF EXISTS `ds_history` 
+CREATE TABLE `ds_history` (
+  `fk_ds_list` int(10) unsigned NOT NULL,
+  `value` varchar(80) NOT NULL DEFAULT '' COMMENT 'Ð—Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸',
+  `create_date` datetime NOT NULL COMMENT 'Ð’Ñ€ÐµÐ¼Ñ ÑÐ¾Ñ…Ñ€Ð°Ð½ÐµÐ½Ð¸Ñ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ',
+  KEY `create_date` (`create_date`),
+  KEY `composite_index` (`fk_ds_list`,`create_date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='Ð?ÑÑ‚Ð¾Ñ€Ð¸Ñ ÑÑ‡ÐµÐµÐº (ÑÑ‚Ð°Ñ‚Ð¸ÑÑ‚Ð¸ÐºÐ°)' 
+/*Data for the table `ds_history` */
+/*Table structure for table `ds_list` */
+DROP TABLE IF EXISTS `ds_list` 
+CREATE TABLE `ds_list` (
+  `id` varchar(255) NOT NULL COMMENT 'project.object.cell',
+  `id_hash` int(10) unsigned NOT NULL COMMENT 'Hash Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ Ð´Ð»Ñ Ð¿Ð¾Ð»Ñ id',
+  `fk_ds_group` varchar(255) DEFAULT NULL,
+  `fk_object` varchar(255) NOT NULL,
+  `type` varchar(10) NOT NULL COMMENT 'Ð¢Ð¸Ð¿ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ (str, float, int, uint, date, bool)',
+  `value` varchar(80) NOT NULL DEFAULT '' COMMENT 'Ð—Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸',
+  `update_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Ð’Ñ€ÐµÐ¼Ñ Ð¾Ð±Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ñ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ',
+  `descr` varchar(255) DEFAULT NULL COMMENT 'ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸ (Ñ€ÑƒÑ)',
+  `csd_changed` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Ð?ÑÐ¿Ð¾Ð»ÑŒÐ·ÑƒÐµÑ‚ÑÑ Ð² Ð¿Ñ€Ð¾ÐµÐºÑ‚Ðµ sync',
+  `has_history` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1 - Ð½ÐµÐ¾Ð±Ñ…Ð¾Ð´Ð¸Ð¼Ð¾ Ð²ÐµÑÑ‚Ð¸ Ð¸ÑÑ‚Ð¾Ñ€Ð¸ÑŽ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ð° ',
+  PRIMARY KEY (`id_hash`),
+  UNIQUE KEY `id` (`id`),
+  KEY `fk_group` (`fk_ds_group`),
+  KEY `FK_ds_list_object` (`fk_object`),
+  CONSTRAINT `FK_ds_list_object` FOREIGN KEY (`fk_object`) REFERENCES `object` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='Ð¯Ñ‡ÐµÐ¹ÐºÐ¸ Ð´Ð°Ð½Ð½Ñ‹Ñ…' 
+/*Data for the table `ds_list` */
+/*Table structure for table `object` */
+DROP TABLE IF EXISTS `object` 
+CREATE TABLE `object` (
+  `id` varchar(255) NOT NULL DEFAULT '' COMMENT 'project.object',
+  `fk_project` varchar(255) NOT NULL DEFAULT '',
+  `name` varchar(80) NOT NULL DEFAULT '' COMMENT 'ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ Ð¾Ð±ÑŠÐµÐºÑ‚Ð° (Ñ€ÑƒÑ)',
+  PRIMARY KEY (`id`),
+  KEY `FK_object` (`fk_project`),
+  CONSTRAINT `FK_object_project` FOREIGN KEY (`fk_project`) REFERENCES `project` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='ÐžÐ±ÑŠÐµÐºÑ‚Ñ‹' 
+/*Data for the table `object` */
+/*Table structure for table `project` */
+DROP TABLE IF EXISTS `project` 
+CREATE TABLE `project` (
+  `id` varchar(255) NOT NULL DEFAULT '' COMMENT 'project',
+  `name` varchar(80) NOT NULL DEFAULT '' COMMENT 'ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ Ð¿Ñ€Ð¾ÐµÐºÑ‚Ð° (Ñ€ÑƒÑ)',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='ÐŸÑ€Ð¾ÐµÐºÑ‚Ñ‹' 
+/*Data for the table `project` */
+/* Procedure structure for procedure `update_cell` */
+/*!50003 DROP PROCEDURE IF EXISTS  `update_cell` */ 
+-- Ð½Ð°Ð¸Ð¼ÐµÐ½ÑŒÑˆÐ¸Ð¹ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ñ‹Ð¹ Ð³Ð¾Ð´ Ð² Ð´Ð°Ñ‚Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸
+-- SYSDATE + HIGH_BOUND_DELTA_MIN = Ð½Ð°Ð¸Ð±Ð¾Ð»ÑŒÑˆÐ°Ñ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ð°Ñ Ð´Ð°Ñ‚Ð° ÑÑ‡ÐµÐ¹ÐºÐ¸
+-- Ð¾Ñ‚ÑÐµÐºÐ°ÐµÐ¼ Ð´Ð°Ñ‚Ñ‹ Ð²Ð½Ðµ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ð¾Ð³Ð¾ Ð´Ð¸Ð°Ð¿Ð¾Ð·Ð¾Ð½Ð°
+-- Ð¿Ð¾Ð»ÑƒÑ‡Ð°ÐµÐ¼ Ð¿Ð¾ÑÐ»ÐµÐ´Ð½ÐµÐµ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸
+/*!50003 CREATE DEFINER=`root`@`localhost` PROCEDURE `update_cell`(IN cell_id VARCHAR(255), IN cell_value VARCHAR(255), IN cell_date DATETIME)
+BEGIN
+    DECLARE LOW_BOUND_YEAR INT DEFAULT 2009;
+    DECLARE HIGH_BOUND_DELTA_MIN INT DEFAULT 360;
+    IF (YEAR(cell_date) >= LOW_BOUND_YEAR) AND (cell_date <= NOW() + INTERVAL HIGH_BOUND_DELTA_MIN MINUTE) THEN
+    BEGIN
+	DECLARE ldatetime DATETIME;
+	DECLARE lvalue VARCHAR(255);		
+	DECLARE hasHistory BOOL;
+	DECLARE idHash INT(10) UNSIGNED;
+	START TRANSACTION;
+	SELECT update_date,value,has_history,id_hash INTO ldatetime,lvalue,hasHistory,idHash FROM ds_list WHERE id=cell_id LIMIT 1;
+	IF (cell_date < ldatetime) AND (ldatetime < NOW()) THEN
+	BEGIN
+	    IF hasHistory THEN
+		INSERT INTO ds_history (fk_ds_list,value,create_date) VALUES (idHash, cell_value, cell_date);
+	    END IF;	
+	END;
+	ELSE BEGIN
+	    IF hasHistory THEN
+	    BEGIN	
+		INSERT INTO ds_history (fk_ds_list,value,create_date) VALUES (idHash, lvalue, ldatetime);
+	    END;	
+	    END IF;
+	    UPDATE ds_list SET update_date=cell_date, value=cell_value, csd_changed=1 WHERE id=cell_id;
+	END;
+	END IF;
+	COMMIT;
+    END;
+    END IF;
+END */ 
+/* Procedure structure for procedure `update_cells` */
+/*!50003 DROP PROCEDURE IF EXISTS  `update_cells` */ 
+-- Ð½Ð°Ð¸Ð¼ÐµÐ½ÑŒÑˆÐ¸Ð¹ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ñ‹Ð¹ Ð³Ð¾Ð´ Ð² Ð´Ð°Ñ‚Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸
+-- SYSDATE + HIGH_BOUND_DELTA_MIN = Ð½Ð°Ð¸Ð±Ð¾Ð»ÑŒÑˆÐ°Ñ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ð°Ñ Ð´Ð°Ñ‚Ð° ÑÑ‡ÐµÐ¹ÐºÐ¸
+-- Ð¾Ñ‚ÑÐµÐºÐ°ÐµÐ¼ Ð´Ð°Ñ‚Ñ‹ Ð²Ð½Ðµ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ð¾Ð³Ð¾ Ð´Ð¸Ð°Ð¿Ð¾Ð·Ð¾Ð½Ð°
+-- Ð¿Ð¾Ð»ÑƒÑ‡Ð°ÐµÐ¼ Ð¿Ð¾ÑÐ»ÐµÐ´Ð½ÐµÐµ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸
+/*!50003 CREATE DEFINER=`root`@`localhost` PROCEDURE `update_cells`(IN cellIds LONGTEXT, IN cellValues LONGTEXT, IN cellDate DATETIME, OUT updatedCellIds LONGTEXT)
+BEGIN
+    DECLARE LOW_BOUND_YEAR INT DEFAULT 2009;
+    DECLARE HIGH_BOUND_DELTA_MIN INT DEFAULT 360;
+    SET updatedCellIds = '';
+    IF (YEAR(cellDate) >= LOW_BOUND_YEAR) AND (cellDate <= NOW() + INTERVAL HIGH_BOUND_DELTA_MIN MINUTE) THEN
+    BEGIN
+	DECLARE _DELIMITER CHAR(2) DEFAULT '&&';
+	DECLARE DELIMITER_LENGTH INT(10) DEFAULT LENGTH(_DELIMITER);
+	DECLARE lastDatetime DATETIME;
+	DECLARE lastValue VARCHAR(255);
+	DECLARE hasHistory BOOL;
+	DECLARE idHash INT(10) UNSIGNED;
+	DECLARE startCellId INT(10) DEFAULT 1;
+	DECLARE stopCellId INT(10) DEFAULT 0;
+	DECLARE startCellValue INT(10) DEFAULT 1;
+	DECLARE stopCellValue INT(10) DEFAULT 0;
+	DECLARE cellId VARCHAR(255);
+	DECLARE cellValue VARCHAR(255);
+	START TRANSACTION;
+loopLabel: LOOP
+	SET stopCellId = LOCATE(_DELIMITER, cellIds, startCellId);
+	SET stopCellValue = LOCATE(_DELIMITER, cellValues, startCellValue);
+	IF stopCellId = 0 THEN
+	BEGIN
+	    SET cellId = SUBSTRING(cellIds, startCellId);
+	    SET cellValue = SUBSTRING(cellValues, startCellValue);
+	END;
+	ELSE BEGIN
+	    SET cellId = SUBSTRING(cellIds, startCellId, stopCellId - startCellId);
+	    SET cellValue = SUBSTRING(cellValues, startCellValue, stopCellValue - startCellValue);
+	END;
+	END IF;
+	SELECT update_date, value, has_history, id_hash 
+	    INTO lastDatetime, lastValue, hasHistory, idHash 
+	FROM ds_list WHERE id=cellId LIMIT 1;
+	IF (cellDate < lastDatetime) AND (lastDatetime < NOW()) THEN
+	BEGIN
+	    IF hasHistory THEN
+		INSERT INTO ds_history (fk_ds_list, value, create_date) VALUES (idHash, cellValue, cellDate);
+	    END IF;	
+	END;
+	ELSE BEGIN
+	    IF hasHistory THEN
+	    BEGIN	
+	        INSERT INTO ds_history (fk_ds_list, value, create_date) VALUES (idHash, lastValue, lastDatetime);
+	    END;	
+	    END IF;
+	    UPDATE ds_list SET update_date=cellDate, value=cellValue, csd_changed=1 WHERE id=cellId;
+	    IF (LENGTH(updatedCellIds) = 0) THEN
+	    BEGIN
+	        SET updatedCellIds = cellId;
+	    END;
+	    ELSE BEGIN
+	        SET updatedCellIds = CONCAT(updatedCellIds, ',', cellId);
+	    END;
+	    END IF;
+	END;
+	END IF;
+	IF stopCellId = 0 THEN
+	BEGIN
+	    LEAVE loopLabel;
+	END;
+	ELSE BEGIN
+	    SET startCellId = stopCellId + DELIMITER_LENGTH;
+	    SET startCellValue = stopCellValue + DELIMITER_LENGTH;
+	END;
+	END IF;
+	END LOOP;
+	COMMIT;
+    END;
+    END IF;
+END */ 
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */ 
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */ 
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */ 
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */ 
+
+
+-------
+01/37/2017 20:37:53
+-------
+
+/*
+SQLyog Ultimate v8.5 
+MySQL - 5.5.23 : Database - zepk_kns_pro
+*********************************************************************
+*/
+/*!40101 SET NAMES utf8 */ 
+/*!40101 SET SQL_MODE=''*/ 
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */ 
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */ 
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */ 
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */ 
+/*Table structure for table `ds_group` */
+DROP TABLE IF EXISTS `ds_group` 
+CREATE TABLE `ds_group` (
+  `id` varchar(255) NOT NULL,
+  `relation` varchar(255) DEFAULT NULL COMMENT 'Ð Ð¾Ð´Ð¸Ñ‚ÐµÐ»ÑŒÑÐºÐ°Ñ Ð³Ñ€ÑƒÐ¿Ð¿Ð°',
+  `name` varchar(80) NOT NULL DEFAULT '' COMMENT 'ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ Ð³Ñ€ÑƒÐ¿Ð¿Ñ‹ (Ñ€ÑƒÑ)',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='Ð“Ñ€ÑƒÐ¿Ð¿Ñ‹ Ð´Ð°Ð½Ð½Ñ‹Ñ…' 
+/*Data for the table `ds_group` */
+/*Table structure for table `ds_history` */
+DROP TABLE IF EXISTS `ds_history` 
+CREATE TABLE `ds_history` (
+  `fk_ds_list` int(10) unsigned NOT NULL,
+  `value` varchar(80) NOT NULL DEFAULT '' COMMENT 'Ð—Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸',
+  `create_date` datetime NOT NULL COMMENT 'Ð’Ñ€ÐµÐ¼Ñ ÑÐ¾Ñ…Ñ€Ð°Ð½ÐµÐ½Ð¸Ñ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ',
+  KEY `create_date` (`create_date`),
+  KEY `composite_index` (`fk_ds_list`,`create_date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='Ð?ÑÑ‚Ð¾Ñ€Ð¸Ñ ÑÑ‡ÐµÐµÐº (ÑÑ‚Ð°Ñ‚Ð¸ÑÑ‚Ð¸ÐºÐ°)' 
+/*Data for the table `ds_history` */
+/*Table structure for table `ds_list` */
+DROP TABLE IF EXISTS `ds_list` 
+CREATE TABLE `ds_list` (
+  `id` varchar(255) NOT NULL COMMENT 'project.object.cell',
+  `id_hash` int(10) unsigned NOT NULL COMMENT 'Hash Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ Ð´Ð»Ñ Ð¿Ð¾Ð»Ñ id',
+  `fk_ds_group` varchar(255) DEFAULT NULL,
+  `fk_object` varchar(255) NOT NULL,
+  `type` varchar(10) NOT NULL COMMENT 'Ð¢Ð¸Ð¿ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ (str, float, int, uint, date, bool)',
+  `value` varchar(80) NOT NULL DEFAULT '' COMMENT 'Ð—Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸',
+  `update_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Ð’Ñ€ÐµÐ¼Ñ Ð¾Ð±Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ñ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ',
+  `descr` varchar(255) DEFAULT NULL COMMENT 'ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸ (Ñ€ÑƒÑ)',
+  `csd_changed` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Ð?ÑÐ¿Ð¾Ð»ÑŒÐ·ÑƒÐµÑ‚ÑÑ Ð² Ð¿Ñ€Ð¾ÐµÐºÑ‚Ðµ sync',
+  `has_history` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1 - Ð½ÐµÐ¾Ð±Ñ…Ð¾Ð´Ð¸Ð¼Ð¾ Ð²ÐµÑÑ‚Ð¸ Ð¸ÑÑ‚Ð¾Ñ€Ð¸ÑŽ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ð° ',
+  PRIMARY KEY (`id_hash`),
+  UNIQUE KEY `id` (`id`),
+  KEY `fk_group` (`fk_ds_group`),
+  KEY `FK_ds_list_object` (`fk_object`),
+  CONSTRAINT `FK_ds_list_object` FOREIGN KEY (`fk_object`) REFERENCES `object` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='Ð¯Ñ‡ÐµÐ¹ÐºÐ¸ Ð´Ð°Ð½Ð½Ñ‹Ñ…' 
+/*Data for the table `ds_list` */
+/*Table structure for table `object` */
+DROP TABLE IF EXISTS `object` 
+CREATE TABLE `object` (
+  `id` varchar(255) NOT NULL DEFAULT '' COMMENT 'project.object',
+  `fk_project` varchar(255) NOT NULL DEFAULT '',
+  `name` varchar(80) NOT NULL DEFAULT '' COMMENT 'ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ Ð¾Ð±ÑŠÐµÐºÑ‚Ð° (Ñ€ÑƒÑ)',
+  PRIMARY KEY (`id`),
+  KEY `FK_object` (`fk_project`),
+  CONSTRAINT `FK_object_project` FOREIGN KEY (`fk_project`) REFERENCES `project` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='ÐžÐ±ÑŠÐµÐºÑ‚Ñ‹' 
+/*Data for the table `object` */
+/*Table structure for table `project` */
+DROP TABLE IF EXISTS `project` 
+CREATE TABLE `project` (
+  `id` varchar(255) NOT NULL DEFAULT '' COMMENT 'project',
+  `name` varchar(80) NOT NULL DEFAULT '' COMMENT 'ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ Ð¿Ñ€Ð¾ÐµÐºÑ‚Ð° (Ñ€ÑƒÑ)',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='ÐŸÑ€Ð¾ÐµÐºÑ‚Ñ‹' 
+/*Data for the table `project` */
+/* Procedure structure for procedure `update_cell` */
+/*!50003 DROP PROCEDURE IF EXISTS  `update_cell` */ 
+-- Ð½Ð°Ð¸Ð¼ÐµÐ½ÑŒÑˆÐ¸Ð¹ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ñ‹Ð¹ Ð³Ð¾Ð´ Ð² Ð´Ð°Ñ‚Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸
+-- SYSDATE + HIGH_BOUND_DELTA_MIN = Ð½Ð°Ð¸Ð±Ð¾Ð»ÑŒÑˆÐ°Ñ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ð°Ñ Ð´Ð°Ñ‚Ð° ÑÑ‡ÐµÐ¹ÐºÐ¸
+-- Ð¾Ñ‚ÑÐµÐºÐ°ÐµÐ¼ Ð´Ð°Ñ‚Ñ‹ Ð²Ð½Ðµ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ð¾Ð³Ð¾ Ð´Ð¸Ð°Ð¿Ð¾Ð·Ð¾Ð½Ð°
+-- Ð¿Ð¾Ð»ÑƒÑ‡Ð°ÐµÐ¼ Ð¿Ð¾ÑÐ»ÐµÐ´Ð½ÐµÐµ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸
+/*!50003 CREATE DEFINER=`root`@`localhost` PROCEDURE `update_cell`(IN cell_id VARCHAR(255), IN cell_value VARCHAR(255), IN cell_date DATETIME)
+BEGIN
+    DECLARE LOW_BOUND_YEAR INT DEFAULT 2009;
+    DECLARE HIGH_BOUND_DELTA_MIN INT DEFAULT 360;
+    IF (YEAR(cell_date) >= LOW_BOUND_YEAR) AND (cell_date <= NOW() + INTERVAL HIGH_BOUND_DELTA_MIN MINUTE) THEN
+    BEGIN
+	DECLARE ldatetime DATETIME;
+	DECLARE lvalue VARCHAR(255);		
+	DECLARE hasHistory BOOL;
+	DECLARE idHash INT(10) UNSIGNED;
+	START TRANSACTION;
+	SELECT update_date,value,has_history,id_hash INTO ldatetime,lvalue,hasHistory,idHash FROM ds_list WHERE id=cell_id LIMIT 1;
+	IF (cell_date < ldatetime) AND (ldatetime < NOW()) THEN
+	BEGIN
+	    IF hasHistory THEN
+		INSERT INTO ds_history (fk_ds_list,value,create_date) VALUES (idHash, cell_value, cell_date);
+	    END IF;	
+	END;
+	ELSE BEGIN
+	    IF hasHistory THEN
+	    BEGIN	
+		INSERT INTO ds_history (fk_ds_list,value,create_date) VALUES (idHash, lvalue, ldatetime);
+	    END;	
+	    END IF;
+	    UPDATE ds_list SET update_date=cell_date, value=cell_value, csd_changed=1 WHERE id=cell_id;
+	END;
+	END IF;
+	COMMIT;
+    END;
+    END IF;
+END */ 
+/* Procedure structure for procedure `update_cells` */
+/*!50003 DROP PROCEDURE IF EXISTS  `update_cells` */ 
+-- Ð½Ð°Ð¸Ð¼ÐµÐ½ÑŒÑˆÐ¸Ð¹ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ñ‹Ð¹ Ð³Ð¾Ð´ Ð² Ð´Ð°Ñ‚Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸
+-- SYSDATE + HIGH_BOUND_DELTA_MIN = Ð½Ð°Ð¸Ð±Ð¾Ð»ÑŒÑˆÐ°Ñ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ð°Ñ Ð´Ð°Ñ‚Ð° ÑÑ‡ÐµÐ¹ÐºÐ¸
+-- Ð¾Ñ‚ÑÐµÐºÐ°ÐµÐ¼ Ð´Ð°Ñ‚Ñ‹ Ð²Ð½Ðµ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ð¾Ð³Ð¾ Ð´Ð¸Ð°Ð¿Ð¾Ð·Ð¾Ð½Ð°
+-- Ð¿Ð¾Ð»ÑƒÑ‡Ð°ÐµÐ¼ Ð¿Ð¾ÑÐ»ÐµÐ´Ð½ÐµÐµ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ðµ ÑÑ‡ÐµÐ¹ÐºÐ¸
+/*!50003 CREATE DEFINER=`root`@`localhost` PROCEDURE `update_cells`(IN cellIds LONGTEXT, IN cellValues LONGTEXT, IN cellDate DATETIME, OUT updatedCellIds LONGTEXT)
+BEGIN
+    DECLARE LOW_BOUND_YEAR INT DEFAULT 2009;
+    DECLARE HIGH_BOUND_DELTA_MIN INT DEFAULT 360;
+    SET updatedCellIds = '';
+    IF (YEAR(cellDate) >= LOW_BOUND_YEAR) AND (cellDate <= NOW() + INTERVAL HIGH_BOUND_DELTA_MIN MINUTE) THEN
+    BEGIN
+	DECLARE _DELIMITER CHAR(2) DEFAULT '&&';
+	DECLARE DELIMITER_LENGTH INT(10) DEFAULT LENGTH(_DELIMITER);
+	DECLARE lastDatetime DATETIME;
+	DECLARE lastValue VARCHAR(255);
+	DECLARE hasHistory BOOL;
+	DECLARE idHash INT(10) UNSIGNED;
+	DECLARE startCellId INT(10) DEFAULT 1;
+	DECLARE stopCellId INT(10) DEFAULT 0;
+	DECLARE startCellValue INT(10) DEFAULT 1;
+	DECLARE stopCellValue INT(10) DEFAULT 0;
+	DECLARE cellId VARCHAR(255);
+	DECLARE cellValue VARCHAR(255);
+	START TRANSACTION;
+loopLabel: LOOP
+	SET stopCellId = LOCATE(_DELIMITER, cellIds, startCellId);
+	SET stopCellValue = LOCATE(_DELIMITER, cellValues, startCellValue);
+	IF stopCellId = 0 THEN
+	BEGIN
+	    SET cellId = SUBSTRING(cellIds, startCellId);
+	    SET cellValue = SUBSTRING(cellValues, startCellValue);
+	END;
+	ELSE BEGIN
+	    SET cellId = SUBSTRING(cellIds, startCellId, stopCellId - startCellId);
+	    SET cellValue = SUBSTRING(cellValues, startCellValue, stopCellValue - startCellValue);
+	END;
+	END IF;
+	SELECT update_date, value, has_history, id_hash 
+	    INTO lastDatetime, lastValue, hasHistory, idHash 
+	FROM ds_list WHERE id=cellId LIMIT 1;
+	IF (cellDate < lastDatetime) AND (lastDatetime < NOW()) THEN
+	BEGIN
+	    IF hasHistory THEN
+		INSERT INTO ds_history (fk_ds_list, value, create_date) VALUES (idHash, cellValue, cellDate);
+	    END IF;	
+	END;
+	ELSE BEGIN
+	    IF hasHistory THEN
+	    BEGIN	
+	        INSERT INTO ds_history (fk_ds_list, value, create_date) VALUES (idHash, lastValue, lastDatetime);
+	    END;	
+	    END IF;
+	    UPDATE ds_list SET update_date=cellDate, value=cellValue, csd_changed=1 WHERE id=cellId;
+	    IF (LENGTH(updatedCellIds) = 0) THEN
+	    BEGIN
+	        SET updatedCellIds = cellId;
+	    END;
+	    ELSE BEGIN
+	        SET updatedCellIds = CONCAT(updatedCellIds, ',', cellId);
+	    END;
+	    END IF;
+	END;
+	END IF;
+	IF stopCellId = 0 THEN
+	BEGIN
+	    LEAVE loopLabel;
+	END;
+	ELSE BEGIN
+	    SET startCellId = stopCellId + DELIMITER_LENGTH;
+	    SET startCellValue = stopCellValue + DELIMITER_LENGTH;
+	END;
+	END IF;
+	END LOOP;
+	COMMIT;
+    END;
+    END IF;
+END */ 
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */ 
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */ 
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */ 
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */ 
+
+set names cp1251 
+/* project */
+INSERT INTO project VALUES('zodino_pns','Æîäèíî ÏÍÑ ¹20') 
+/* object */
+INSERT INTO object VALUES('zodino_pns.zodino_pns_20','zodino_pns','Æîäèíî ÏÍÑ ¹20') 
+/* ds_list */
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.gprs_name_apn_srv',2924115851,'zodino_pns.zodino_pns_20','asciz','Èìÿ APN ñåðâåðà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.gprs_name_apn_user',1401658171,'zodino_pns.zodino_pns_20','asciz','Èìÿ APN ïîëüçîâàòåëÿ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.gprs_apn_pass',1591108675,'zodino_pns.zodino_pns_20','asciz','APN ïàðîëü') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.gprs_name_tcp_srv',3242106164,'zodino_pns.zodino_pns_20','asciz','Èìÿ TCP ñåðâåðà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.gprs_name_tcp_port',3325610569,'zodino_pns.zodino_pns_20','asciz','Èìÿ TCP ïîðòà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.gprs_name_object_autorization',217796252,'zodino_pns.zodino_pns_20','asciz','Èìÿ îáúåêòà àâòîðèçàöèè') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.gprs_name_user_autorization',2378380785,'zodino_pns.zodino_pns_20','asciz','Èìÿ ïîëüçîâàòåëÿ àâòîðèçàöèè') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.gprs_pass_autorization',610021647,'zodino_pns.zodino_pns_20','asciz','Ïàðîëü àâòîðèçàöèè') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.gsm_lvl_signal_gsm',2785329982,'zodino_pns.zodino_pns_20','uint','Óðîâåíü ñèãíàëà GSM') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.gsm_num_phone_ascii',748895418,'zodino_pns.zodino_pns_20','str','Íîìåð òåëåôîíà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.gsm_flag_disable_sms',3889468069,'zodino_pns.zodino_pns_20','bool','Ôëàã çàïðåòà SMS - çàïðåùåíû') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.gsm_flag_disable_sms_limiter',3516778752,'zodino_pns.zodino_pns_20','bool','Ôëàã çàïðåòà SMS ïî îãðàíè÷èòåëþ  - çàïðåùåíû') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.gsm_limiter_sms_messages',1167099134,'zodino_pns.zodino_pns_20','uint','Îãðàíè÷èòåëü SMS â ñîîáùåíèÿõ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.gsm_counter_send_sms',3964450728,'zodino_pns.zodino_pns_20','uint','Ñ÷åò÷èê îòïðàâëåííûõ SMS') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.as_time_block_alm',240480196,'zodino_pns.zodino_pns_20','uint','Âðåìÿ áëîêèðîâêè àâàðèé, â ñåêóíäàõ ( 0 – 3600 ñåê; 0 – íå èñïîëüçîâàòü)') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.as_flag_disable_alm',3734979923,'zodino_pns.zodino_pns_20','bool','Ôëàã çàïåðòà îáðàáîòêè àâàðèé - çàïðåùåíî') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.ps1_value',1205520154,'zodino_pns.zodino_pns_20','float','Çíà÷åíèå äàò÷èêà äàâëåíèÿ âîäû 1') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.ps1_min_value',1597028080,'zodino_pns.zodino_pns_20','float','Çíà÷åíèå ìèíèìàëüíîãî ïðåäåëà PS1') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.ps1_max_value',2296054961,'zodino_pns.zodino_pns_20','float','Çíà÷åíèå ìàêñèìàëüíîãî ïðåäåëà PS1') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.ps1_min_use',3990729244,'zodino_pns.zodino_pns_20','bool','Èñïîëüçîâàòü ìèíèìóì äàò÷èêà äàâëåíèÿ âîäû 1') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.ps1_max_use',3996013139,'zodino_pns.zodino_pns_20','bool','Èñïîëüçîâàòü ìàêñèìóì äàò÷èêà äàâëåíèÿ âîäû 1') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.ps1_min_alm',896745244,'zodino_pns.zodino_pns_20','bool','Äîñòèãíóò ìèíèìàëüíûé ïðåäåë (0 – íå äîñòèãíóò) PS1') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.ps1_max_alm',914415443,'zodino_pns.zodino_pns_20','bool','Äîñòèãíóò ìàêñèìàëüíûé ïðåäåë (0 – íå äîñòèãíóò) PS1') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.ps2_value',1983044999,'zodino_pns.zodino_pns_20','float','Çíà÷åíèå äàò÷èêà PS2') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.ps2_min_value',3335704817,'zodino_pns.zodino_pns_20','float','Çíà÷åíèå ìèíèìàëüíîãî ïðåäåëà PS2') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.ps2_max_value',288973488,'zodino_pns.zodino_pns_20','float','Çíà÷åíèå ìàêñèìàëüíîãî ïðåäåëà PS2') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.ps2_min_use',3562049241,'zodino_pns.zodino_pns_20','bool','Èñïîëüçîâàòü àíàëèç ìèíèìàëüíîãî ïðåäåëà (0 – íå èñïîëüçîâàòü) PS2') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.ps2_max_use',3617812118,'zodino_pns.zodino_pns_20','bool','Èñïîëüçîâàòü àíàëèç ìàêñèìàëüíîãî ïðåäåëà (0 – íå èñïîëüçîâàòü) PS2') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.ps2_min_alm',217973721,'zodino_pns.zodino_pns_20','bool','Äîñòèãíóò ìèíèìàëüíûé ïðåäåë (0 – íå äîñòèãíóò) PS2') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.ps2_max_alm',252568470,'zodino_pns.zodino_pns_20','bool','Äîñòèãíóò ìàêñèìàëüíûé ïðåäåë (0 – íå äîñòèãíóò) PS2') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.rs_time_rotation_hour',1715663209,'zodino_pns.zodino_pns_20','uint','Çíà÷åíèå âðåìåíè ðîòàöèè (÷àñ)') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.rs_time_rotation_minute',336457204,'zodino_pns.zodino_pns_20','uint','Çíà÷åíèå âðåìåíè ðîòàöèè (ìèíóòà)') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.rs_period_rotation',3148055521,'zodino_pns.zodino_pns_20','uint','Çíà÷åíèå ïåðèîäà ðîòàöèè (â ÷àñàõ)') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.rs_p1_use_rotation',862613923,'zodino_pns.zodino_pns_20','bool','Íàñîñ 1 èñïîëüçóåòñÿ â ðîòàöèè') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.rs_p2_use_rotation',1326142584,'zodino_pns.zodino_pns_20','bool','Íàñîñ 2 èñïîëüçóåòñÿ â ðîòàöèè') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.rs_p3_use_rotation',3523523854,'zodino_pns.zodino_pns_20','bool','Íàñîñ 3 èñïîëüçóåòñÿ â ðîòàöèè') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.rs_p4_use_rotation',3083411406,'zodino_pns.zodino_pns_20','bool','Íàñîñ 4 èñïîëüçóåòñÿ â ðîòàöèè') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.rs_p5_use_rotation',717684408,'zodino_pns.zodino_pns_20','bool','Íàñîñ 5 èñïîëüçóåòñÿ â ðîòàöèè') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.rs_use_time_rotation',2237590004,'zodino_pns.zodino_pns_20','bool','Èñïîëüçîâàòü ðîòàöèþ ïî âðåìåíè') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.rs_use_rotation_via_period',1875259819,'zodino_pns.zodino_pns_20','bool','Èñïîëüçîâàòü ðîòàöèþ ÷åðåç ïåðèîä') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.rs_need_rotation',2527204334,'zodino_pns.zodino_pns_20','bool','Íåîáõîäèìà ðîòàöèÿ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.reserve',886466149,'zodino_pns.zodino_pns_20','bool','Ðåçåðâ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.ts_value',1587969281,'zodino_pns.zodino_pns_20','int','Çíà÷åíèå äàò÷èêà òåìïåðàòóðû') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.ts_min_value',4144006034,'zodino_pns.zodino_pns_20','int','Çíà÷åíèå ìèíèìàëüíîãî ïðåäåëà äàò÷èêà òåìïåðàòóðû') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.ts_max_value',552284627,'zodino_pns.zodino_pns_20','int','Çíà÷åíèå ìàêñèìàëüíîãî ïðåäåëà äàò÷èêà òåìïåðàòóðû') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.ts_min_use',1868511848,'zodino_pns.zodino_pns_20','bool','Èñïîëüçîâàíèå ìèíèìóìà äàò÷èêà òåìïåðàòóðû') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.ts_max_use',1823267367,'zodino_pns.zodino_pns_20','bool','Èñïîëüçîâàíèå ìàêñèìóìà äàò÷èêà òåìïåðàòóðû') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.ts_min_alm',3086071656,'zodino_pns.zodino_pns_20','bool','Äîñòèãíóò ìèíèìàëüíûé ïðåäåë äàò÷èêà òåìïåðàòóðû') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.ts_max_alm',3020052263,'zodino_pns.zodino_pns_20','bool','Äîñòèãíóò ìàêñèìàëüíûé ïðåäåë äàò÷èêà òåìïåðàòóðû') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p1_value',158865323,'zodino_pns.zodino_pns_20','uint','Íàñîñ 1. Çíà÷åíèå òîêà íàñîñà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p1_min_value',2049054915,'zodino_pns.zodino_pns_20','uint','Íàñîñ 1. Çíà÷åíèå ìèíèìàëüíîãî ïðåäåëà íàñîñà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p1_max_value',2915674754,'zodino_pns.zodino_pns_20','uint','Íàñîñ 1. Çíà÷åíèå ìàêñèìàëüíîãî ïðåäåëà íàñîñà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p1_min_use',2530259347,'zodino_pns.zodino_pns_20','bool','Íàñîñ 1. Èñïîëüçîâàòü àíàëèç ìèíèìàëüíîãî ïðåäåëà íàñîñà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p1_max_use',2502119900,'zodino_pns.zodino_pns_20','bool','Íàñîñ 1. Èñïîëüçîâàòü àíàëèç ìàêñèìàëüíîãî ïðåäåëà íàñîñà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p1_min_alm',1316895891,'zodino_pns.zodino_pns_20','bool','Íàñîñ 1. Äîñòèãíóò ìèíèìàëüíûé ïðåäåë  íàñîñà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p1_max_alm',1301142748,'zodino_pns.zodino_pns_20','bool','Íàñîñ 1. Äîñòèãíóò ìàêñèìàëüíûé ïðåäåë  íàñîñà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p1_use_auto_off_on_event',1408485046,'zodino_pns.zodino_pns_20','bool','Íàñîñ 1. Èñïîëüçîâàòü àâòîâûêëþ÷åíèå íàñîñà ïî ñîáûòèþ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p1_on',2261361146,'zodino_pns.zodino_pns_20','bool','Íàñîñ 1. Íàñîñ âêëþ÷åí') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p1_state_on',2722546651,'zodino_pns.zodino_pns_20','bool','Íàñîñ 1. Ñîñòîÿíèå âêëþ÷åíèÿ íàñîñà - âêëþ÷àåòñÿ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p1_state_off',2947148919,'zodino_pns.zodino_pns_20','bool','Íàñîñ 1. Ñîñòîÿíèå âûêëþ÷åíèÿ íàñîñà - âûêëþ÷àåòñÿ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p2_value',948964662,'zodino_pns.zodino_pns_20','uint','Íàñîñ 2. Çíà÷åíèå òîêà íàñîñà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p2_min_value',3821043394,'zodino_pns.zodino_pns_20','uint','Íàñîñ 2. Çíà÷åíèå ìèíèìàëüíîãî ïðåäåëà íàñîñà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p2_max_value',875285635,'zodino_pns.zodino_pns_20','uint','Íàñîñ 2. Çíà÷åíèå ìàêñèìàëüíîãî ïðåäåëà íàñîñà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p2_min_use',2942143830,'zodino_pns.zodino_pns_20','bool','Íàñîñ 2. Èñïîëüçîâàòü àíàëèç ìèíèìàëüíîãî ïðåäåëà íàñîñà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p2_max_use',2897112345,'zodino_pns.zodino_pns_20','bool','Íàñîñ 2. Èñïîëüçîâàòü àíàëèç ìàêñèìàëüíîãî ïðåäåëà íàñîñà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p2_min_alm',2012414038,'zodino_pns.zodino_pns_20','bool','Íàñîñ 2. Äîñòèãíóò ìèíèìàëüíûé ïðåäåë  íàñîñà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p2_max_alm',1946214425,'zodino_pns.zodino_pns_20','bool','Íàñîñ 2. Äîñòèãíóò ìàêñèìàëüíûé ïðåäåë  íàñîñà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p2_use_auto_off_on_event',622264203,'zodino_pns.zodino_pns_20','bool','Íàñîñ 2. Èñïîëüçîâàòü àâòîâûêëþ÷åíèå íàñîñà ïî ñîáûòèþ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p2_on',2491158036,'zodino_pns.zodino_pns_20','bool','Íàñîñ 2. Íàñîñ âêëþ÷åí') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p2_state_on',1232173272,'zodino_pns.zodino_pns_20','bool','Íàñîñ 2. Ñîñòîÿíèå âêëþ÷åíèÿ íàñîñà - âêëþ÷àåòñÿ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p2_state_off',910920310,'zodino_pns.zodino_pns_20','bool','Íàñîñ 2. Ñîñòîÿíèå âûêëþ÷åíèÿ íàñîñà - âûêëþ÷àåòñÿ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p3_value',2665940610,'zodino_pns.zodino_pns_20','uint','Íàñîñ 3. Çíà÷åíèå òîêà íàñîñà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p3_min_value',575578370,'zodino_pns.zodino_pns_20','uint','Íàñîñ 3. Çíà÷åíèå ìèíèìàëüíîãî ïðåäåëà íàñîñà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p3_max_value',4121236291,'zodino_pns.zodino_pns_20','uint','Íàñîñ 3. Çíà÷åíèå ìàêñèìàëüíîãî ïðåäåëà íàñîñà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p3_min_use',3089537301,'zodino_pns.zodino_pns_20','bool','Íàñîñ 3. Èñïîëüçîâàòü àíàëèç ìèíèìàëüíîãî ïðåäåëà íàñîñà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p3_max_use',3151329626,'zodino_pns.zodino_pns_20','bool','Íàñîñ 3. Èñïîëüçîâàòü àíàëèç ìàêñèìàëüíîãî ïðåäåëà íàñîñà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p3_min_alm',1619530773,'zodino_pns.zodino_pns_20','bool','Íàñîñ 3. Äîñòèãíóò ìèíèìàëüíûé ïðåäåë  íàñîñà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p3_max_alm',1669067866,'zodino_pns.zodino_pns_20','bool','Íàñîñ 3. Äîñòèãíóò ìàêñèìàëüíûé ïðåäåë  íàñîñà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p3_use_auto_off_on_event',3194295647,'zodino_pns.zodino_pns_20','bool','Íàñîñ 3. Èñïîëüçîâàòü àâòîâûêëþ÷åíèå íàñîñà ïî ñîáûòèþ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p3_on',750807409,'zodino_pns.zodino_pns_20','bool','Íàñîñ 3. Íàñîñ âêëþ÷åí') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p3_state_on',2796753894,'zodino_pns.zodino_pns_20','bool','Íàñîñ 3. Ñîñòîÿíèå âêëþ÷åíèÿ íàñîñà - âêëþ÷àåòñÿ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p3_state_off',4156904886,'zodino_pns.zodino_pns_20','bool','Íàñîñ 3. Ñîñòîÿíèå âûêëþ÷åíèÿ íàñîñà - âûêëþ÷àåòñÿ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p4_value',1530935308,'zodino_pns.zodino_pns_20','uint','Íàñîñ 4. Çíà÷åíèå òîêà íàñîñà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p4_min_value',192263297,'zodino_pns.zodino_pns_20','uint','Íàñîñ 4. Çíà÷åíèå ìèíèìàëüíîãî ïðåäåëà íàñîñà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p4_max_value',3701343936,'zodino_pns.zodino_pns_20','uint','Íàñîñ 4. Çíà÷åíèå ìàêñèìàëüíîãî ïðåäåëà íàñîñà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p4_min_use',3695703260,'zodino_pns.zodino_pns_20','bool','Íàñîñ 4. Èñïîëüçîâàòü àíàëèç ìèíèìàëüíîãî ïðåäåëà íàñîñà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p4_max_use',3753120915,'zodino_pns.zodino_pns_20','bool','Íàñîñ 4. Èñïîëüçîâàòü àíàëèç ìàêñèìàëüíîãî ïðåäåëà íàñîñà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p4_min_alm',82409948,'zodino_pns.zodino_pns_20','bool','Íàñîñ 4. Äîñòèãíóò ìèíèìàëüíûé ïðåäåë  íàñîñà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p4_max_alm',119183763,'zodino_pns.zodino_pns_20','bool','Íàñîñ 4. Äîñòèãíóò ìàêñèìàëüíûé ïðåäåë  íàñîñà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p4_use_auto_off_on_event',3369897457,'zodino_pns.zodino_pns_20','bool','Íàñîñ 4. Èñïîëüçîâàòü àâòîâûêëþ÷åíèå íàñîñà ïî ñîáûòèþ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p4_on',2971095496,'zodino_pns.zodino_pns_20','bool','Íàñîñ 4. Íàñîñ âêëþ÷åí') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p4_state_on',1148127391,'zodino_pns.zodino_pns_20','bool','Íàñîñ 4. Ñîñòîÿíèå âêëþ÷åíèÿ íàñîñà - âêëþ÷àåòñÿ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p4_state_off',3741204533,'zodino_pns.zodino_pns_20','bool','Íàñîñ 4. Ñîñòîÿíèå âûêëþ÷åíèÿ íàñîñà - âûêëþ÷àåòñÿ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p5_value',4248253368,'zodino_pns.zodino_pns_20','uint','Íàñîñ 5. Çíà÷åíèå òîêà íàñîñà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p5_min_value',3405474625,'zodino_pns.zodino_pns_20','uint','Íàñîñ 5. Çíà÷åíèå ìèíèìàëüíîãî ïðåäåëà íàñîñà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p5_max_value',487643392,'zodino_pns.zodino_pns_20','uint','Íàñîñ 5. Çíà÷åíèå ìàêñèìàëüíîãî ïðåäåëà íàñîñà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p5_min_use',3409764511,'zodino_pns.zodino_pns_20','bool','Íàñîñ 5. Èñïîëüçîâàòü àíàëèç ìèíèìàëüíîãî ïðåäåëà íàñîñà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p5_max_use',3369009360,'zodino_pns.zodino_pns_20','bool','Íàñîñ 5. Èñïîëüçîâàòü àíàëèç ìàêñèìàëüíîãî ïðåäåëà íàñîñà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p5_min_alm',328363423,'zodino_pns.zodino_pns_20','bool','Íàñîñ 5. Äîñòèãíóò ìèíèìàëüíûé ïðåäåë  íàñîñà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p5_max_alm',274828752,'zodino_pns.zodino_pns_20','bool','Íàñîñ 5. Äîñòèãíóò ìàêñèìàëüíûé ïðåäåë  íàñîñà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p5_use_auto_off_on_event',1404004133,'zodino_pns.zodino_pns_20','bool','Íàñîñ 5. Èñïîëüçîâàòü àâòîâûêëþ÷åíèå íàñîñà ïî ñîáûòèþ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p5_on',162215597,'zodino_pns.zodino_pns_20','bool','Íàñîñ 5. Íàñîñ âêëþ÷åí') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p5_state_on',2880267169,'zodino_pns.zodino_pns_20','bool','Íàñîñ 5. Ñîñòîÿíèå âêëþ÷åíèÿ íàñîñà - âêëþ÷àåòñÿ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p5_state_off',527474677,'zodino_pns.zodino_pns_20','bool','Íàñîñ 5. Ñîñòîÿíèå âûêëþ÷åíèÿ íàñîñà - âûêëþ÷àåòñÿ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.fc_current_task',2274697147,'zodino_pns.zodino_pns_20','float','Òåêóùåå çàäàíèå') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.fc_work_mode',2925078999,'zodino_pns.zodino_pns_20','uint','Ðåæèì ðàáîòû') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.fc_day_num',54380229,'zodino_pns.zodino_pns_20','uint','Íîìåð äíÿ (0-7, 0 – ñóòî÷íûé ãðàôèê)') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.fc_halfhour_task',42705747,'zodino_pns.zodino_pns_20','bytes','Çàäàíèå íà ïîëó÷àñ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.fc_task',421858097,'zodino_pns.zodino_pns_20','float','Çàäàíèå') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.fc_week_graph',3013548297,'zodino_pns.zodino_pns_20','bytes','Íåäåëüíûé ãðàôèê') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_1_set_freq',2518267838,'zodino_pns.zodino_pns_20','float','abb_acs580 ¹1. Çàäàíèå ÷àñòîòû, Ãö') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_1_set_pid',3656344787,'zodino_pns.zodino_pns_20','float','abb_acs580 ¹1. Çàäàíèå ÏÈÄ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_1_address',4183409783,'zodino_pns.zodino_pns_20','uint','abb_acs580 ¹1. Àäðåñ óñòðîéñòâà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_1_use_answer',1663363790,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹1. Èñïîëüçîâàòü àíàëèç îòâåòà óñòðîéñòâà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_1_use',2928227916,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹1. Èñïîëüçîâàòü óñòðîéñòâî') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_2_set_freq',2100169917,'zodino_pns.zodino_pns_20','float','abb_acs580 ¹2. Çàäàíèå ÷àñòîòû, Ãö') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_2_set_pid',3764541462,'zodino_pns.zodino_pns_20','float','abb_acs580 ¹2. Çàäàíèå ÏÈÄ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_2_address',3235182770,'zodino_pns.zodino_pns_20','uint','abb_acs580 ¹2. Àäðåñ óñòðîéñòâà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_2_use_answer',347748414,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹2. Èñïîëüçîâàòü àíàëèç îòâåòà óñòðîéñòâà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_2_use',3911797916,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹2. Èñïîëüçîâàòü óñòðîéñòâî') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_3_set_freq',2464966531,'zodino_pns.zodino_pns_20','float','abb_acs580 ¹3. Çàäàíèå ÷àñòîòû, Ãö') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_3_set_pid',4145630293,'zodino_pns.zodino_pns_20','float','abb_acs580 ¹3. Çàäàíèå ÏÈÄ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_3_address',3618630897,'zodino_pns.zodino_pns_20','uint','abb_acs580 ¹3. Àäðåñ óñòðîéñòâà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_3_use_answer',2401203281,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹3. Èñïîëüçîâàòü àíàëèç îòâåòà óñòðîéñòâà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_3_use',3561579820,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹3. Èñïîëüçîâàòü óñòðîéñòâî') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_4_set_freq',1882225914,'zodino_pns.zodino_pns_20','float','abb_acs580 ¹4. Çàäàíèå ÷àñòîòû, Ãö') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_4_set_pid',2474123676,'zodino_pns.zodino_pns_20','float','abb_acs580 ¹4. Çàäàíèå ÏÈÄ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_4_address',3016655160,'zodino_pns.zodino_pns_20','uint','abb_acs580 ¹4. Àäðåñ óñòðîéñòâà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_4_use_answer',4219968990,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹4. Èñïîëüçîâàòü àíàëèç îòâåòà óñòðîéñòâà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_4_use',1718204732,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹4. Èñïîëüçîâàòü óñòðîéñòâî') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_5_set_freq',2683443140,'zodino_pns.zodino_pns_20','float','abb_acs580 ¹5. Çàäàíèå ÷àñòîòû, Ãö') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_5_set_pid',2214802911,'zodino_pns.zodino_pns_20','float','abb_acs580 ¹5. Çàäàíèå ÏÈÄ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_5_address',2763363707,'zodino_pns.zodino_pns_20','uint','abb_acs580 ¹5. Àäðåñ óñòðîéñòâà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_5_use_answer',1612894641,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹5. Èñïîëüçîâàòü àíàëèç îòâåòà óñòðîéñòâà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_5_use',1527353484,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹5. Èñïîëüçîâàòü óñòðîéñòâî') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.rsm0503_cs_value',2820350224,'zodino_pns.zodino_pns_20','float','ÐÑÌ0503. Çíà÷åíèå òåêóùåãî ðàñõîäà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.rsm0503_cs_acc_value',1771400572,'zodino_pns.zodino_pns_20','uint','ÐÑÌ0503. Çíà÷åíèå íàêîïëåííîãî ðàñõîäà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.rsm0503_cs_address',3581932243,'zodino_pns.zodino_pns_20','uint','ÐÑÌ0503. Àäðåñ äàò÷èêà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.rsm0503_cs_common_alm',4271307866,'zodino_pns.zodino_pns_20','bool','ÐÑÌ0503. Îøèáêà óñòðîéñòâà ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.rsm0503_cs_not_answer',3287281945,'zodino_pns.zodino_pns_20','bool','ÐÑÌ0503. Äàò÷èê íå îòâå÷àåò') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.rsm0503_cs_use',1143434234,'zodino_pns.zodino_pns_20','bool','ÐÑÌ0503. Èñïîëüçîâàòü äàò÷èê') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.version',2485804932,'zodino_pns.zodino_pns_20','str','Âåðñèÿ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.count_reset_controller',1355581908,'zodino_pns.zodino_pns_20','uint','Êîëè÷åñòâî ñáðîñîâ êîíòðîëëåðà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.reset_por',3917180497,'zodino_pns.zodino_pns_20','bool','Ñáðîñ POR') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.reset_bor',4141422927,'zodino_pns.zodino_pns_20','bool','Ñáðîñ BOR') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.reset_wdtr',3075773775,'zodino_pns.zodino_pns_20','bool','Ñáðîñ WDTR') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.reset_swr',1764116561,'zodino_pns.zodino_pns_20','bool','Ñáðîñ SWR') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.reset_extr',1484279887,'zodino_pns.zodino_pns_20','bool','Ñáðîñ EXTR') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.reset_iopr_or_uwr',3325221392,'zodino_pns.zodino_pns_20','bool','Ñáðîñ IOPR èëè UWR') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.reset_trapr',2429847171,'zodino_pns.zodino_pns_20','bool','Ñáðîñ TRAPR') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.date_time',343682126,'zodino_pns.zodino_pns_20','date','Äàòà/âðåìÿ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.step_stat',890789775,'zodino_pns.zodino_pns_20','uint','Øàã ñòàòèñòèêè') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.count_block_stat',2712941083,'zodino_pns.zodino_pns_20','uint','Êîëè÷åñòâî áëîêîâ ñòàòèñòèêè') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.count_part_of_block_stat',2900841845,'zodino_pns.zodino_pns_20','uint','Êîëè÷åñòâî áëîêîâ äëÿ ÷àñòè÷íîãî ïîëó÷åíèÿ ñòàòèñòèêè') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.save_alm_stat',4020118688,'zodino_pns.zodino_pns_20','bool','Ñîõðàíåíèå àâàðèéíîé ñòàòèñòèêè') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.save_stat_send_sms',1558222868,'zodino_pns.zodino_pns_20','bool','Ñîõðàíåíèå ñòàòèñòèêè ïî îòïðàâêå SMS') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.save_stat_event',744047326,'zodino_pns.zodino_pns_20','bool','Ñîõðàíåíèå ñòàòèñòèêè ïî ñîáûòèþ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.alm_memory',2407339418,'zodino_pns.zodino_pns_20','bool','Àâàðèÿ çàïîëíåííîñòè ïàìÿòè äëÿ ñòàòèñòèêè') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.rsm0503_use_responce_analysis',3628715170,'zodino_pns.zodino_pns_20','bool','ÐÑÌ0503. Èñïîëüçîâàòü àíàëèç îòâåòà äàò÷èêà ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_1_output_freq',2461529350,'zodino_pns.zodino_pns_20','float','abb_acs580 ¹1. Âûõîäíàÿ ÷àñòîòà, Ãö') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_1_speed_engine',468249283,'zodino_pns.zodino_pns_20','float','abb_acs580 ¹1. Ñêîðîñòü äâèãàòåëÿ, îá/ìèí') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_1_amperage_engine',1986969435,'zodino_pns.zodino_pns_20','float','abb_acs580 ¹1. Òîê äâèãàòåëÿ, À') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_1_voltage_engine',878486919,'zodino_pns.zodino_pns_20','uint','abb_acs580 ¹1. Âûõîäíîå íàïðÿæåíèå, Â') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_1_power_engine',3371655495,'zodino_pns.zodino_pns_20','float','abb_acs580 ¹1. Ìîùíîñòü äâèãàòåëÿ, %') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_1_invertor_power_gigawatt',1849230628,'zodino_pns.zodino_pns_20','uint','abb_acs580 ¹1. Ñ÷åò÷èê ÃÂò*÷ èíâåðòåðà, ÃÂò*÷') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_1_invertor_power_megawatt',945386392,'zodino_pns.zodino_pns_20','uint','abb_acs580 ¹1. Ñ÷åò÷èê ÌÂò*÷ èíâåðòåðà, MÂò*÷') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_1_invertor_power_kilowatt',3965804233,'zodino_pns.zodino_pns_20','uint','abb_acs580 ¹1. Ñ÷åò÷èê êÂò*÷ èíâåðòåðà, êÂò*÷') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_1_disconnecion_reason',4287323870,'zodino_pns.zodino_pns_20','uint','abb_acs580 ¹1. Îòêàç, âûçâàâøèé îòêëþ÷åíèÿ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_1_fact_value',1808539838,'zodino_pns.zodino_pns_20','float','abb_acs580 ¹1. Ôàêòè÷åñêîå çíà÷åíèå ðåãóëèðóåìîé âåëè÷èíû') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_1_ready',985412178,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹1. Ãîòîâ ê âêëþ÷åíèþ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_1_ready_to_run',1210067109,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹1. Ãîòîâ ê ïóñêó') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_1_ready_for_task',1987298111,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹1. Ãîòîâ ïî çàäàíèþ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_1_rejection',3790398946,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹1. Îòêàç') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_1_switch_2_inactiv',1871380463,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹1. Âûêëþ÷àòåëü 2 íå àêòèâåí') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_1_switch_3_inactiv',2029120428,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹1. Âûêëþ÷àòåëü 3 íå àêòèâåí') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_1_forbid_to_on',3322257903,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹1. Âêëþ÷åíèå çàïðåùåíî') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_1_alert',97841468,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹1. Ïðåäóïðåæäåíèå') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_1_drive_on_setting',3370007392,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹1. Ïðèâîä íà óñòàâêå') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_1_remote_mode',3678446107,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹1. Ðåæèì óïðàâëåíèå - äèñòàíöèîííûé') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_1_too_high_speed_or_frequency',246191731,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹1. Ïðåâûøåíî îãðàíè÷åíèå ñêîðîñòè/÷àñòîòû') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_1_custom1',283347611,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹1. Ïîëüçîâàòåëüñêèé 1') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_1_custom2',2313870113,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹1. Ïîëüçîâàòåëüñêèé 2') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_1_custom3',4277005239,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹1. Ïîëüçîâàòåëüñêèé 3') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_1_custom4',1619623444,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹1. Ïîëüçîâàòåëüñêèé 4') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_1_common_alm',2079726914,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹1. Îáùàÿ àâàðèÿ óñòðîéñòâà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_1_not_answer',1183780865,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹1. Óñòðîéñòâî íå îòâå÷àåò') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_2_output_freq',796760520,'zodino_pns.zodino_pns_20','float','abb_acs580 ¹2. Âûõîäíàÿ ÷àñòîòà, Ãö') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_2_speed_engine',1737084696,'zodino_pns.zodino_pns_20','float','abb_acs580 ¹2. Ñêîðîñòü äâèãàòåëÿ, îá/ìèí') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_2_amperage_engine',636806367,'zodino_pns.zodino_pns_20','float','abb_acs580 ¹2. Òîê äâèãàòåëÿ, À') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_2_voltage_engine',496243061,'zodino_pns.zodino_pns_20','uint','abb_acs580 ¹2. Âûõîäíîå íàïðÿæåíèå, Â') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_2_power_engine',3029746844,'zodino_pns.zodino_pns_20','float','abb_acs580 ¹2. Ìîùíîñòü äâèãàòåëÿ, %') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_2_invertor_power_gigawatt',1540666231,'zodino_pns.zodino_pns_20','uint','abb_acs580 ¹2. Ñ÷åò÷èê ÃÂò*÷ èíâåðòåðà, ÃÂò*÷') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_2_invertor_power_megawatt',229950923,'zodino_pns.zodino_pns_20','uint','abb_acs580 ¹2. Ñ÷åò÷èê ÌÂò*÷ èíâåðòåðà, MÂò*÷') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_2_invertor_power_kilowatt',3649890458,'zodino_pns.zodino_pns_20','uint','abb_acs580 ¹2. Ñ÷åò÷èê êÂò*÷ èíâåðòåðà, êÂò*÷') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_2_disconnecion_reason',2224413757,'zodino_pns.zodino_pns_20','uint','abb_acs580 ¹2. Îòêàç, âûçâàâøèé îòêëþ÷åíèÿ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_2_fact_value',475198030,'zodino_pns.zodino_pns_20','float','abb_acs580 ¹2. Ôàêòè÷åñêîå çíà÷åíèå ðåãóëèðóåìîé âåëè÷èíû') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_2_ready',190064847,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹2. Ãîòîâ ê âêëþ÷åíèþ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_2_ready_to_run',876678526,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹2. Ãîòîâ ê ïóñêó') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_2_ready_for_task',1606121421,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹2. Ãîòîâ ïî çàäàíèþ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_2_rejection',2014217187,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹2. Îòêàç') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_2_switch_2_inactiv',2232165005,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹2. Âûêëþ÷àòåëü 2 íå àêòèâåí') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_2_switch_3_inactiv',2457286350,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹2. Âûêëþ÷àòåëü 3 íå àêòèâåí') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_2_forbid_to_on',3127149620,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹2. Âêëþ÷åíèå çàïðåùåíî') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_2_alert',876407713,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹2. Ïðåäóïðåæäåíèå') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_2_drive_on_setting',576251394,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹2. Ïðèâîä íà óñòàâêå') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_2_remote_mode',1720372949,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹2. Ðåæèì óïðàâëåíèå - äèñòàíöèîííûé') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_2_too_high_speed_or_frequency',2879716639,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹2. Ïðåâûøåíî îãðàíè÷åíèå ñêîðîñòè/÷àñòîòû') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_2_custom1',695121502,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹2. Ïîëüçîâàòåëüñêèé 1') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_2_custom2',2959599588,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹2. Ïîëüçîâàòåëüñêèé 2') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_2_custom3',3345012594,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹2. Ïîëüçîâàòåëüñêèé 3') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_2_custom4',1493451473,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹2. Ïîëüçîâàòåëüñêèé 4') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_2_common_alm',208195506,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹2. Îáùàÿ àâàðèÿ óñòðîéñòâà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_2_not_answer',823247601,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹2. Óñòðîéñòâî íå îòâå÷àåò') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_3_output_freq',4075503693,'zodino_pns.zodino_pns_20','float','abb_acs580 ¹3. Âûõîäíàÿ ÷àñòîòà, Ãö') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_3_speed_engine',4203097710,'zodino_pns.zodino_pns_20','float','abb_acs580 ¹3. Ñêîðîñòü äâèãàòåëÿ, îá/ìèí') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_3_amperage_engine',2723295132,'zodino_pns.zodino_pns_20','float','abb_acs580 ¹3. Òîê äâèãàòåëÿ, À') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_3_voltage_engine',3019669732,'zodino_pns.zodino_pns_20','uint','abb_acs580 ¹3. Âûõîäíîå íàïðÿæåíèå, Â') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_3_power_engine',697935338,'zodino_pns.zodino_pns_20','float','abb_acs580 ¹3. Ìîùíîñòü äâèãàòåëÿ, %') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_3_invertor_power_gigawatt',4267647865,'zodino_pns.zodino_pns_20','uint','abb_acs580 ¹3. Ñ÷åò÷èê ÃÂò*÷ èíâåðòåðà, ÃÂò*÷') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_3_invertor_power_megawatt',2822723013,'zodino_pns.zodino_pns_20','uint','abb_acs580 ¹3. Ñ÷åò÷èê ÌÂò*÷ èíâåðòåðà, MÂò*÷') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_3_invertor_power_kilowatt',2080864404,'zodino_pns.zodino_pns_20','uint','abb_acs580 ¹3. Ñ÷åò÷èê êÂò*÷ èíâåðòåðà, êÂò*÷') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_3_disconnecion_reason',458186659,'zodino_pns.zodino_pns_20','uint','abb_acs580 ¹3. Îòêàç, âûçâàâøèé îòêëþ÷åíèÿ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_3_fact_value',2281160225,'zodino_pns.zodino_pns_20','float','abb_acs580 ¹3. Ôàêòè÷åñêîå çíà÷åíèå ðåãóëèðóåìîé âåëè÷èíû') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_3_ready',2904761211,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹3. Ãîòîâ ê âêëþ÷åíèþ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_3_ready_to_run',2840521736,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹3. Ãîòîâ ê ïóñêó') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_3_ready_for_task',4057196124,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹3. Ãîòîâ ïî çàäàíèþ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_3_rejection',3112197155,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹3. Îòêàç') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_3_switch_2_inactiv',1784583276,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹3. Âûêëþ÷àòåëü 2 íå àêòèâåí') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_3_switch_3_inactiv',2099609647,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹3. Âûêëþ÷àòåëü 3 íå àêòèâåí') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_3_forbid_to_on',661349698,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹3. Âêëþ÷åíèå çàïðåùåíî') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_3_alert',2454446101,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹3. Ïðåäóïðåæäåíèå') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_3_drive_on_setting',3440005347,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹3. Ïðèâîä íà óñòàâêå') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_3_remote_mode',3139180368,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹3. Ðåæèì óïðàâëåíèå - äèñòàíöèîííûé') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_3_too_high_speed_or_frequency',3366134843,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹3. Ïðåâûøåíî îãðàíè÷åíèå ñêîðîñòè/÷àñòîòû') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_3_custom1',1041605149,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹3. Ïîëüçîâàòåëüñêèé 1') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_3_custom2',2803692455,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹3. Ïîëüçîâàòåëüñêèé 2') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_3_custom3',3491480369,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹3. Ïîëüçîâàòåëüñêèé 3') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_3_custom4',1316968082,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹3. Ïîëüçîâàòåëüñêèé 4') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_3_common_alm',2546828253,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹3. Îáùàÿ àâàðèÿ óñòðîéñòâà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_3_not_answer',2863959710,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹3. Óñòðîéñòâî íå îòâå÷àåò') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_4_output_freq',2409121301,'zodino_pns.zodino_pns_20','float','abb_acs580 ¹4. Âûõîäíàÿ ÷àñòîòà, Ãö') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_4_speed_engine',2672526510,'zodino_pns.zodino_pns_20','float','abb_acs580 ¹4. Ñêîðîñòü äâèãàòåëÿ, îá/ìèí') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_4_amperage_engine',2193642455,'zodino_pns.zodino_pns_20','float','abb_acs580 ¹4. Òîê äâèãàòåëÿ, À') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_4_voltage_engine',1308981393,'zodino_pns.zodino_pns_20','uint','abb_acs580 ¹4. Âûõîäíîå íàïðÿæåíèå, Â') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_4_power_engine',1280577322,'zodino_pns.zodino_pns_20','float','abb_acs580 ¹4. Ìîùíîñòü äâèãàòåëÿ, %') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_4_invertor_power_gigawatt',806346705,'zodino_pns.zodino_pns_20','uint','abb_acs580 ¹4. Ñ÷åò÷èê ÃÂò*÷ èíâåðòåðà, ÃÂò*÷') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_4_invertor_power_megawatt',1718593901,'zodino_pns.zodino_pns_20','uint','abb_acs580 ¹4. Ñ÷åò÷èê ÌÂò*÷ èíâåðòåðà, MÂò*÷') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_4_invertor_power_kilowatt',2992079932,'zodino_pns.zodino_pns_20','uint','abb_acs580 ¹4. Ñ÷åò÷èê êÂò*÷ èíâåðòåðà, êÂò*÷') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_4_disconnecion_reason',1923668475,'zodino_pns.zodino_pns_20','uint','abb_acs580 ¹4. Îòêàç, âûçâàâøèé îòêëþ÷åíèÿ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_4_fact_value',4084160430,'zodino_pns.zodino_pns_20','float','abb_acs580 ¹4. Ôàêòè÷åñêîå çíà÷åíèå ðåãóëèðóåìîé âåëè÷èíû') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_4_ready',1753488885,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹4. Ãîòîâ ê âêëþ÷åíèþ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_4_ready_to_run',3431155400,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹4. Ãîòîâ ê ïóñêó') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_4_ready_for_task',204086825,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹4. Ãîòîâ ïî çàäàíèþ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_4_rejection',2428193184,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹4. Îòêàç') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_4_switch_2_inactiv',2339413512,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹4. Âûêëþ÷àòåëü 2 íå àêòèâåí') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_4_switch_3_inactiv',2618001995,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹4. Âûêëþ÷àòåëü 3 íå àêòèâåí') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_4_forbid_to_on',1118228354,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹4. Âêëþ÷åíèå çàïðåùåíî') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_4_alert',1475141275,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹4. Ïðåäóïðåæäåíèå') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_4_drive_on_setting',740579975,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹4. Ïðèâîä íà óñòàâêå') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_4_remote_mode',3329167624,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹4. Ðåæèì óïðàâëåíèå - äèñòàíöèîííûé') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_4_too_high_speed_or_frequency',986000774,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹4. Ïðåâûøåíî îãðàíè÷åíèå ñêîðîñòè/÷àñòîòû') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_4_custom1',1517604820,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹4. Ïîëüçîâàòåëüñêèé 1') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_4_custom2',3279789678,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹4. Ïîëüçîâàòåëüñêèé 2') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_4_custom3',3027939064,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹4. Ïîëüçîâàòåëüñêèé 3') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_4_custom4',706624347,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹4. Ïîëüçîâàòåëüñêèé 4') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_4_common_alm',3814025810,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹4. Îáùàÿ àâàðèÿ óñòðîéñòâà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_4_not_answer',3727451921,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹4. Óñòðîéñòâî íå îòâå÷àåò') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_5_output_freq',1376690064,'zodino_pns.zodino_pns_20','float','abb_acs580 ¹5. Âûõîäíàÿ ÷àñòîòà, Ãö') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_5_speed_engine',38036952,'zodino_pns.zodino_pns_20','float','abb_acs580 ¹5. Ñêîðîñòü äâèãàòåëÿ, îá/ìèí') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_5_amperage_engine',90609812,'zodino_pns.zodino_pns_20','float','abb_acs580 ¹5. Òîê äâèãàòåëÿ, À') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_5_voltage_engine',3765299456,'zodino_pns.zodino_pns_20','uint','abb_acs580 ¹5. Âûõîäíîå íàïðÿæåíèå, Â') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_5_power_engine',3512462940,'zodino_pns.zodino_pns_20','float','abb_acs580 ¹5. Ìîùíîñòü äâèãàòåëÿ, %') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_5_invertor_power_gigawatt',2508476383,'zodino_pns.zodino_pns_20','uint','abb_acs580 ¹5. Ñ÷åò÷èê ÃÂò*÷ èíâåðòåðà, ÃÂò*÷') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_5_invertor_power_megawatt',3286514019,'zodino_pns.zodino_pns_20','uint','abb_acs580 ¹5. Ñ÷åò÷èê ÌÂò*÷ èíâåðòåðà, MÂò*÷') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_5_invertor_power_kilowatt',400299058,'zodino_pns.zodino_pns_20','uint','abb_acs580 ¹5. Ñ÷åò÷èê êÂò*÷ èíâåðòåðà, êÂò*÷') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_5_disconnecion_reason',3983694437,'zodino_pns.zodino_pns_20','uint','abb_acs580 ¹5. Îòêàç, âûçâàâøèé îòêëþ÷åíèÿ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_5_fact_value',1758075841,'zodino_pns.zodino_pns_20','float','abb_acs580 ¹5. Ôàêòè÷åñêîå çíà÷åíèå ðåãóëèðóåìîé âåëè÷èíû') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_5_ready',3472037441,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹5. Ãîòîâ ê âêëþ÷åíèþ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_5_ready_to_run',1368172478,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹5. Ãîòîâ ê ïóñêó') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_5_ready_for_task',2722271160,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹5. Ãîòîâ ïî çàäàíèþ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_5_rejection',1362466400,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹5. Îòêàç') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_5_switch_2_inactiv',1679960297,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹5. Âûêëþ÷àòåëü 2 íå àêòèâåí') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_5_switch_3_inactiv',1935228074,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹5. Âûêëþ÷àòåëü 3 íå àêòèâåí') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_5_forbid_to_on',3752406772,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹5. Âêëþ÷åíèå çàïðåùåíî') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_5_alert',4053521711,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹5. Ïðåäóïðåæäåíèå') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_5_drive_on_setting',3279350886,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹5. Ïðèâîä íà óñòàâêå') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_5_remote_mode',469354637,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹5. Ðåæèì óïðàâëåíèå - äèñòàíöèîííûé') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_5_too_high_speed_or_frequency',1505948834,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹5. Ïðåâûøåíî îãðàíè÷åíèå ñêîðîñòè/÷àñòîòû') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_5_custom1',1292884887,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹5. Ïîëüçîâàòåëüñêèé 1') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_5_custom2',3557198381,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹5. Ïîëüçîâàòåëüñêèé 2') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_5_custom3',2734799547,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹5. Ïîëüçîâàòåëüñêèé 3') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_5_custom4',1030041368,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹5. Ïîëüçîâàòåëüñêèé 4') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_5_common_alm',2029004349,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹5. Îáùàÿ àâàðèÿ óñòðîéñòâà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_5_not_answer',1166617470,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹5. Óñòðîéñòâî íå îòâå÷àåò') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.alm_time_incorrect',1593906027,'zodino_pns.zodino_pns_20','bool','Âðåìÿ íåêîððåêòíî') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.alm_water',1540062594,'zodino_pns.zodino_pns_20','bool','Çàòîïëåíèå') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.alm_nsd',451223071,'zodino_pns.zodino_pns_20','bool','ÍÑÄ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.alm_power',192047352,'zodino_pns.zodino_pns_20','bool','Àâàðèÿ ÈÁÏ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.alm_block_di1_not_answer',274400339,'zodino_pns.zodino_pns_20','bool','Áëîê Di1 íå îòâå÷àåò') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.alm_block_di2_not_answer',1741018787,'zodino_pns.zodino_pns_20','bool','Áëîê Di2 íå îòâå÷àåò') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.alm_block_do1_not_answer',2965298062,'zodino_pns.zodino_pns_20','bool','Áëîê Do1 íå îòâå÷àåò') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.alm_block_rs485_1_not_answer',2056280178,'zodino_pns.zodino_pns_20','bool','Áëîê RS485 ¹1 íå îòâå÷àåò') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.alm_block_rs485_2_not_answer',219056770,'zodino_pns.zodino_pns_20','bool','Áëîê RS485 ¹2 íå îòâå÷àåò') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.mode_alm_nsd',4220513355,'zodino_pns.zodino_pns_20','bool','Ðåæèì îáðàáîòêè ÍÑÄ ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p1_mode',2581174199,'zodino_pns.zodino_pns_20','bool','Ðåæèì ðàáîòû Í1 (1 – àâòî; 0 – ðó÷íîé)') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p2_mode',525198617,'zodino_pns.zodino_pns_20','bool','Ðåæèì ðàáîòû Í2 (1 – àâòî; 0 – ðó÷íîé)') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p3_mode',3557897916,'zodino_pns.zodino_pns_20','bool','Ðåæèì ðàáîòû Í3 (1 – àâòî; 0 – ðó÷íîé)') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p4_mode',3373532676,'zodino_pns.zodino_pns_20','bool','Ðåæèì ðàáîòû Í4 (1 – àâòî; 0 – ðó÷íîé)') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p5_mode',38327713,'zodino_pns.zodino_pns_20','bool','Ðåæèì ðàáîòû Í5 (1 – àâòî; 0 – ðó÷íîé)') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.time_work_p1_minute',379512640,'zodino_pns.zodino_pns_20','uint','Íàðàáîòêà íàñîñà 1(ìèí)') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.time_work_p2_minute',2551308451,'zodino_pns.zodino_pns_20','uint','Íàðàáîòêà íàñîñà 2(ìèí)') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.time_work_p3_minute',1421598781,'zodino_pns.zodino_pns_20','uint','Íàðàáîòêà íàñîñà 3(ìèí)') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.time_work_p4_minute',1585375524,'zodino_pns.zodino_pns_20','uint','Íàðàáîòêà íàñîñà 4(ìèí)') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.time_work_p5_minute',2463427002,'zodino_pns.zodino_pns_20','uint','Íàðàáîòêà íàñîñà 5(ìèí)') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.time_work_p1_hour',736576753,'zodino_pns.zodino_pns_20','uint','Íàðàáîòêà íàñîñà 1(÷àñû)') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.time_work_p2_hour',2910008927,'zodino_pns.zodino_pns_20','uint','Íàðàáîòêà íàñîñà 2(÷àñû)') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.time_work_p3_hour',1714415098,'zodino_pns.zodino_pns_20','uint','Íàðàáîòêà íàñîñà 3(÷àñû)') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.time_work_p4_hour',2066404674,'zodino_pns.zodino_pns_20','uint','Íàðàáîòêà íàñîñà 4(÷àñû)') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.time_work_p5_hour',2960525031,'zodino_pns.zodino_pns_20','uint','Íàðàáîòêà íàñîñà 5(÷àñû)') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.num_main_pump',2372509288,'zodino_pns.zodino_pns_20','uint','Íîìåð íàñîñà ñ Ï×Ò (1-5)') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.correction_to_fc_task',4021136352,'zodino_pns.zodino_pns_20','float','Ïîïðàâêà ê çàäàíèþ Ï×Ò') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.mode_autokeep_ps',1442053233,'zodino_pns.zodino_pns_20','bool','Ðåæèì ïîääåðæàíèÿ äàâëåíèÿ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p1_use',1558831683,'zodino_pns.zodino_pns_20','bool','Èñïîëüçîâàòü íàñîñ 1') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p2_use',457808019,'zodino_pns.zodino_pns_20','bool','Èñïîëüçîâàòü íàñîñ 2') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p3_use',640266531,'zodino_pns.zodino_pns_20','bool','Èñïîëüçîâàòü íàñîñ 3') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p4_use',2483645747,'zodino_pns.zodino_pns_20','bool','Èñïîëüçîâàòü íàñîñ 4') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p5_use',2842248323,'zodino_pns.zodino_pns_20','bool','Èñïîëüçîâàòü íàñîñ 5') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.delta_autokeep_ps',3733968460,'zodino_pns.zodino_pns_20','float','Ãèñòåðåçèñ íà àâòîïîääåðæàíèå äàâëåíèÿ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.delay_stabilization_system_autokeep',3822164524,'zodino_pns.zodino_pns_20','uint','Òàéìàóò íà ñòàáèëèçàöèþ ñèñòåìû â ñåêóíäàõ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p2_off_low_frequency',1853228982,'zodino_pns.zodino_pns_20','float','íèæíÿÿ  ÷àñòîòà âûêëþ÷åíèÿ Í2') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p2_on_high_frequency',1334195667,'zodino_pns.zodino_pns_20','float','âåðõíÿÿ  ÷àñòîòà âêëþ÷åíèÿ Í2') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p3_off_low_frequency',3113519086,'zodino_pns.zodino_pns_20','float','íèæíÿÿ  ÷àñòîòà âûêëþ÷åíèÿ Í3') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p3_on_high_frequency',2556736907,'zodino_pns.zodino_pns_20','float','âåðõíÿÿ  ÷àñòîòà âêëþ÷åíèÿ Í3') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p4_off_low_frequency',4088007845,'zodino_pns.zodino_pns_20','float','íèæíÿÿ  ÷àñòîòà âûêëþ÷åíèÿ Í4') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p4_on_high_frequency',3529129664,'zodino_pns.zodino_pns_20','float','âåðõíÿÿ  ÷àñòîòà âêëþ÷åíèÿ Í4') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p5_off_low_frequency',608734461,'zodino_pns.zodino_pns_20','float','íèæíÿÿ  ÷àñòîòà âûêëþ÷åíèÿ Í5') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p5_on_high_frequency',95993496,'zodino_pns.zodino_pns_20','float','âåðõíÿÿ  ÷àñòîòà âêëþ÷åíèÿ Í5') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.freq_time_analys_sec',32426730,'zodino_pns.zodino_pns_20','uint','Âðåìÿ àíàëèçà ÷àñòîòû  â ñåêóíäàõ') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_1_work',3440428505,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹1. Ðàáîòà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_2_work',1266988919,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹2. Ðàáîòà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_3_work',2161665234,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹3. Ðàáîòà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_4_work',2648527978,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹4. Ðàáîòà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.abb_acs580_5_work',1451329487,'zodino_pns.zodino_pns_20','bool','abb_acs580 ¹5. Ðàáîòà') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.system_code',2912250171,'zodino_pns.zodino_pns_20','uint','Ñèñòåìíûé îòâåò') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p1_state',3080494436,'zodino_pns.zodino_pns_20','bool','Ñîñòîÿíèå Í1') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p2_state',2255783929,'zodino_pns.zodino_pns_20','bool','Ñîñòîÿíèå Í2') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p3_state',537103437,'zodino_pns.zodino_pns_20','bool','Ñîñòîÿíèå Í3') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p4_state',3852776131,'zodino_pns.zodino_pns_20','bool','Ñîñòîÿíèå Í4') 
+INSERT INTO ds_list(id,id_hash,fk_object,type,descr) VALUES('zodino_pns.zodino_pns_20.p5_state',1137949047,'zodino_pns.zodino_pns_20','bool','Ñîñòîÿíèå Í5') 
