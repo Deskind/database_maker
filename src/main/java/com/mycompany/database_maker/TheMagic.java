@@ -74,7 +74,7 @@ public class TheMagic {
 		return;
 	}
         
-        String createProQuery = "create database if not exists pro_" + projectName;
+        String createProQuery = "create database if not exists pro_" + projectName + " DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci";
         String useProQuery = "use pro_"+projectName;
         
         Statement createProStatement = connection.createStatement();
@@ -88,12 +88,15 @@ public class TheMagic {
         
         ScriptRunner runner = new ScriptRunner(connection, false, false);
         runner.runScript(new BufferedReader(new FileReader(new File(TheMagic.class.getClassLoader().getResource("create PRO database.sql").toURI()))));
-        
+//        
         String pathForFilingTables = properties.getProperty("pathForFillingTables");
-        
-        runner.runScript(new BufferedReader(new FileReader(pathForFilingTables+"\\pro_"+projectName+".sql")));
+//        
+//        runner.runScript(new BufferedReader(new FileReader(pathForFilingTables+"\\pro_"+projectName+".sql")));
                 
-        
+        ScriptRunner sr = new ScriptRunner(connection, false, false);
+        br = new BufferedReader(new FileReader(pathForFilingTables+"\\pro_"+projectName+".sql"));        
+        sr.runScript(br);
+
 	if (connection != null) {
 		System.out.println("You made it, take control your database now!");
 	} else {
