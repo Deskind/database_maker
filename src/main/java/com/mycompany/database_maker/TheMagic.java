@@ -3,13 +3,10 @@
  */
 package com.mycompany.database_maker;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+
+import java.io.*;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -31,8 +28,7 @@ public class TheMagic {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         System.out.print("Enter name for pro and engine databases \n");
         String projectName = br.readLine();
-//
-//      
+
 
         InputStream in = TheMagic.class.getClassLoader().getResourceAsStream("database_credentials.properties");
         Properties properties = new Properties();
@@ -44,14 +40,8 @@ public class TheMagic {
         System.out.println("user is " + user);
         System.out.println("password is " + password);
 
-        
-        
-        
-        
-        
-        
-        
-        
+
+
         System.out.println("-------- MySQL JDBC Connection Testing ------------");
 
 	try {
@@ -73,28 +63,47 @@ public class TheMagic {
 		e.printStackTrace();
 		return;
 	}
-        
+
         String createProQuery = "create database if not exists pro_" + projectName + " DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci";
         String useProQuery = "use pro_"+projectName;
-        
+
         Statement createProStatement = connection.createStatement();
         Statement useProQueryStatement = connection.createStatement();
-        
+
         createProStatement.executeUpdate(createProQuery);
         useProQueryStatement.executeQuery(useProQuery);
-        
+
         createProStatement.close();
         createProStatement.close();
         
         ScriptRunner runner = new ScriptRunner(connection, false, false);
         runner.runScript(new BufferedReader(new FileReader(new File(TheMagic.class.getClassLoader().getResource("create PRO database.sql").toURI()))));
-//        
+
         String pathForFilingTables = properties.getProperty("pathForFillingTables");
-//        
-//        runner.runScript(new BufferedReader(new FileReader(pathForFilingTables+"\\pro_"+projectName+".sql")));
-                
+
+
+        byte[] arr = IOUtils.toByteArray(new InputStreamReader(new FileInputStream(pathForFilingTables+"pro_Жодино ПНС №20.sql"), "Windows-1251"));
+        File f = new File("test.sql");
+        FileUtils.writeByteArrayToFile(f, arr);
+
+        String tempString = "";
+
+        BufferedReader tempReader = new BufferedReader(new FileReader(f));
+        String s = "";
+
+        while ((s = tempReader.readLine()) != null){
+            tempString+=s+"\n";
+        }
+
+        tempString = tempString.replace("set names cp1251;", "set names utf8;");
+
+        File ff = new File("result.sql");
+
+
+        FileUtils.writeStringToFile(ff, tempString);
+
         ScriptRunner sr = new ScriptRunner(connection, false, false);
-        br = new BufferedReader(new FileReader(pathForFilingTables+"\\pro_"+projectName+".sql"));        
+        br = new BufferedReader(new InputStreamReader(new FileInputStream(ff)));
         sr.runScript(br);
 
 	if (connection != null) {
@@ -102,7 +111,7 @@ public class TheMagic {
 	} else {
 		System.out.println("Failed to make connection!");
 	}
-        
+
         connection.close();
     }
 }
