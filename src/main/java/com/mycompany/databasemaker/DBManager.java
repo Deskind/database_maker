@@ -1,4 +1,4 @@
-package com.mycompany.database_maker;
+package com.mycompany.databasemaker;
 
 import java.io.*;
 import java.net.URISyntaxException;
@@ -29,6 +29,7 @@ public class DBManager {
 
     //Method for creating tables in databases
     public void createAndFillTables(String dbName, String pathForFillingTables, String fileName) {
+
         ScriptRunner runner = new ScriptRunner(connection, false, false);
         try {
 
@@ -36,7 +37,8 @@ public class DBManager {
             queryManager.wannaUse(connection, dbName+"_pro");
 
             //Creating tables in pro database
-            runner.runScript(new BufferedReader(new FileReader(new File(TheMagic.class.getClassLoader().getResource("create PRO database.sql").toURI()))));
+            InputStream in = DBManager.class.getClassLoader().getResourceAsStream("create PRO database.sql");
+            runner.runScript(new BufferedReader(new InputStreamReader(in)));
             System.out.println("Tables in pro was created!!!!!");
 
             //Filling tables in pro database
@@ -53,7 +55,8 @@ public class DBManager {
             queryManager.wannaUse(connection, dbName + "_engine");
 
             //Creating tables in engine database
-            runner.runScript(new BufferedReader(new FileReader(new File(TheMagic.class.getClassLoader().getResource("create ENGINE database.sql").toURI()))));
+            in = DBManager.class.getClassLoader().getResourceAsStream("create ENGINE database.sql");
+            runner.runScript(new BufferedReader(new InputStreamReader(in)));
             System.out.println("Tables in engine was successfully created!!!");
 
             //Filling tables in pro database
@@ -69,9 +72,22 @@ public class DBManager {
             System.out.println("Can't find sql file for filling pro or engine table");
         } catch (SQLException e) {
             e.printStackTrace();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
         }
+    }
+
+    public void fillXmldaTable(String dbName, String projectName) {
+        //Use database with xmlda_item table
+        queryManager.wannaUse(connection, dbName);
+        System.out.println("Database: engine. Ready to process xmlda_item");
+
+        //Filling fk_argument column
+        queryManager.queryForMe(connection, "INSERT INTO xmlda_item (fk_argument) SELECT fk_argument FROM cell_argument");
+
+        //Filling name column with values like in fk_argument column
+        queryManager.queryForMe(connection, "UPDATE xmlda_item SET xmlda_item.name = xmlda_item.fk_argument;");
+
+        //Modify column name
+        queryManager.queryForMe(connection, "UPDATE xmlda_item SET xmlda_item.name = REPLACE(xmlda_item.name, '"+projectName+"."+"', '')");
     }
 
 //    public ScriptRunner getRunner() {

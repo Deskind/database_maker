@@ -1,4 +1,4 @@
-package com.mycompany.database_maker;
+package com.mycompany.databasemaker;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -13,14 +13,14 @@ import java.io.*;
  */
 public class FileProcessor {
     private BufferedReader tempReader = null;
-
+    File resultFile = new File("result.sql");
+    File tempFile = new File("temp.sql");
     private String tempString = "";
     private byte[] arr = null;
 
     //arguments: file -> the file neds to process; delimiter -> the delimiter for script runner; runnner -> ref to script runner
     public File processFile(File file, String delimiter, ScriptRunner runner) throws IOException {
-        File resultFile = new File("result.sql");
-        File tempFile = new File("temp.sql");
+
         //Reading file as bytes and write it to tempFile
         try {
             //read file argument as array of bytes
@@ -44,27 +44,28 @@ public class FileProcessor {
                 tempString = tempString.replace("set names cp1251;", "set names utf8;;");
                 tempString = tempString.replace(");", ");;");
                 tempString = tempString.replace("]);;", "]);");
-                //back default delimiter for script runner
             }
-
 
             //Write result string to file
             FileUtils.writeStringToFile(resultFile, tempString);
+            //Clean temp string to prevent appearance of redundant entries in it
+            tempString = "";
+
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("File processor can't find file to process!!!!!");
         }
 
 
-        FileUtils.writeStringToFile(tempFile, "");
-        FileUtils.writeStringToFile(resultFile, "");
+
 
        return resultFile;
     }
 
 
     public void cleanTempFiles() throws IOException {
-
+        FileUtils.writeStringToFile(tempFile, "");
+        FileUtils.writeStringToFile(resultFile, "");
 
     }
 }

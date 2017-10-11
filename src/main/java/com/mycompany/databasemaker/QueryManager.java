@@ -1,16 +1,7 @@
-package com.mycompany.database_maker;
+package com.mycompany.databasemaker;
 
-import com.mysql.cj.api.conf.ConnectionPropertiesTransform;
-import org.apache.commons.io.FileUtils;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 /**
  * Created by iseverin on 04.10.17.

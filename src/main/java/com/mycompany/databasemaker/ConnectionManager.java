@@ -1,4 +1,4 @@
-package com.mycompany.database_maker;
+package com.mycompany.databasemaker;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

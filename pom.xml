@@ -45,7 +45,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                          <mainClass>com.mycompany.database_maker.TheMagic</mainClass>
+                          <mainClass>com.mycompany.databasemaker.TheMagic</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
