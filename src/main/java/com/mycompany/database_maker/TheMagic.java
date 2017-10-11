@@ -25,93 +25,130 @@ import java.util.Properties;
 public class TheMagic {
     
     public static void main(String args[]) throws IOException, SQLException, URISyntaxException{
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        System.out.print("Enter name for pro and engine databases \n");
-        String projectName = br.readLine();
+        BufferedReader br = null;
+        InputStream in = null;
+        Properties properties = null;
+        Connection connection = null;
+        DBManager dbManager = new DBManager(ConnectionManager.getConnection("root", ""));
 
 
-        InputStream in = TheMagic.class.getClassLoader().getResourceAsStream("database_credentials.properties");
-        Properties properties = new Properties();
+        //Reader for getting user input from console
+        br = new BufferedReader(new InputStreamReader(System.in));
+        System.out.print("Enter name for pro and engine databases without _pro and _engine postfixes \n");
+//        String dbName = br.readLine();
+        String dbName = "zodino";
+
+        System.out.print("Enter name as it is in proman folder without _pro and _engine prefixes \n");
+//        String fileName = br.readLine();
+        String fileName = "Жодино ПНС №20";
+
+        //Get values from properties file
+        properties = new Properties();
+        in = TheMagic.class.getClassLoader().getResourceAsStream("database_credentials.properties");
         properties.load(in);
 
         String user = properties.getProperty("user");
         String password = properties.getProperty("password");
+        String pathForFillingTables = properties.getProperty("pathForFillingTables");
 
-        System.out.println("user is " + user);
-        System.out.println("password is " + password);
+        //Get connection to database from Connection Manager
+        connection = ConnectionManager.getConnection(user, password);
 
+        //Asking DatabaseManager to create two tables
+        dbManager.createDataBases(dbName, user,password);
 
+        //Asking DataBaseManager to create tables by executing sql file from sources folder of project
+        dbManager.createAndFillTables(dbName, pathForFillingTables, fileName);
 
-        System.out.println("-------- MySQL JDBC Connection Testing ------------");
-
-	try {
-		Class.forName("com.mysql.jdbc.Driver");
-	} catch (ClassNotFoundException e) {
-		System.out.println("Where is your MySQL JDBC Driver?");
-		e.printStackTrace();
-		return;
-	}
-
-	System.out.println("MySQL JDBC Driver Registered!");
-	Connection connection = null;
-
-	try {
-		connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/?serverTimezone=UTC",user, password);
-
-	} catch (SQLException e) {
-		System.out.println("Connection Failed! Check output console");
-		e.printStackTrace();
-		return;
-	}
-
-        String createProQuery = "create database if not exists pro_" + projectName + " DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci";
-        String useProQuery = "use pro_"+projectName;
-
-        Statement createProStatement = connection.createStatement();
-        Statement useProQueryStatement = connection.createStatement();
-
-        createProStatement.executeUpdate(createProQuery);
-        useProQueryStatement.executeQuery(useProQuery);
-
-        createProStatement.close();
-        createProStatement.close();
-        
-        ScriptRunner runner = new ScriptRunner(connection, false, false);
-        runner.runScript(new BufferedReader(new FileReader(new File(TheMagic.class.getClassLoader().getResource("create PRO database.sql").toURI()))));
-
-        String pathForFilingTables = properties.getProperty("pathForFillingTables");
+        //Asking DBManager to fill tables in databases with data in file which path is specifying in properties file. And name specifying by user in console.
 
 
-        byte[] arr = IOUtils.toByteArray(new InputStreamReader(new FileInputStream(pathForFilingTables+"pro_Жодино ПНС №20.sql"), "Windows-1251"));
-        File f = new File("test.sql");
-        FileUtils.writeByteArrayToFile(f, arr);
-
-        String tempString = "";
-
-        BufferedReader tempReader = new BufferedReader(new FileReader(f));
-        String s = "";
-
-        while ((s = tempReader.readLine()) != null){
-            tempString+=s+"\n";
-        }
-
-        tempString = tempString.replace("set names cp1251;", "set names utf8;");
-
-        File ff = new File("result.sql");
 
 
-        FileUtils.writeStringToFile(ff, tempString);
 
-        ScriptRunner sr = new ScriptRunner(connection, false, false);
-        br = new BufferedReader(new InputStreamReader(new FileInputStream(ff)));
-        sr.runScript(br);
 
-	if (connection != null) {
-		System.out.println("You made it, take control your database now!");
-	} else {
-		System.out.println("Failed to make connection!");
-	}
 
-        connection.close();
+
+
+
+
+
+//
+//        System.out.println("user is " + user);
+//        System.out.println("password is " + password);
+//
+//
+//
+//        System.out.println("-------- MySQL JDBC Connection Testing ------------");
+//
+//	try {
+//		Class.forName("com.mysql.jdbc.Driver");
+//	} catch (ClassNotFoundException e) {
+//		System.out.println("Where is your MySQL JDBC Driver?");
+//		e.printStackTrace();
+//		return;
+//	}
+//
+//	System.out.println("MySQL JDBC Driver Registered!");
+//	Connection connection = null;
+//
+//	try {
+//		connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/?serverTimezone=UTC",user, password);
+//
+//	} catch (SQLException e) {
+//		System.out.println("Connection Failed! Check output console");
+//		e.printStackTrace();
+//		return;
+//	}
+//
+//        String createProQuery = "create database if not exists pro_" + projectName + " DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci";
+//        String useProQuery = "use pro_"+projectName;
+//
+//        Statement createProStatement = connection.createStatement();
+//        Statement useProQueryStatement = connection.createStatement();
+//
+//        createProStatement.executeUpdate(createProQuery);
+//        useProQueryStatement.executeQuery(useProQuery);
+//
+//        createProStatement.close();
+//        createProStatement.close();
+//
+//        ScriptRunner runner = new ScriptRunner(connection, false, false);
+//        runner.runScript(new BufferedReader(new FileReader(new File(TheMagic.class.getClassLoader().getResource("create PRO database.sql").toURI()))));
+//
+//        String pathForFilingTables = properties.getProperty("pathForFillingTables");
+//
+//
+//        byte[] arr = IOUtils.toByteArray(new InputStreamReader(new FileInputStream(pathForFilingTables+"pro_Жодино ПНС №20.sql"), "Windows-1251"));
+//        File f = new File("test.sql");
+//        FileUtils.writeByteArrayToFile(f, arr);
+//
+//        String tempString = "";
+//
+//        BufferedReader tempReader = new BufferedReader(new FileReader(f));
+//        String s = "";
+//
+//        while ((s = tempReader.readLine()) != null){
+//            tempString+=s+"\n";
+//        }
+//
+//        tempString = tempString.replace("set names cp1251;", "set names utf8;");
+//
+//        File ff = new File("result.sql");
+//
+//
+//        FileUtils.writeStringToFile(ff, tempString);
+//
+//        ScriptRunner sr = new ScriptRunner(connection, false, false);
+//        br = new BufferedReader(new InputStreamReader(new FileInputStream(ff)));
+//        sr.runScript(br);
+//
+//	if (connection != null) {
+//		System.out.println("You made it, take control your database now!");
+//	} else {
+//		System.out.println("Failed to make connection!");
+//	}
+//
+//        connection.close();
     }
 }
