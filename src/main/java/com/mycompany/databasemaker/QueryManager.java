@@ -10,7 +10,7 @@ public class QueryManager {
     public void queryForMe(Connection connection, String query) {
         try {
             connection.createStatement().executeUpdate(query);
-            System.out.println("Data base created successfully!!!");
+            System.out.println("Query executed successfully!!!");
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println("Query manager is saying that something wrong with connection!!!");

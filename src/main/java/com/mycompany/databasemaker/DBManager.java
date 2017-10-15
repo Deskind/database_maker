@@ -75,7 +75,7 @@ public class DBManager {
         }
     }
 
-    public void fillXmldaTable(String dbName, String projectName) {
+    public void fillXmldaTable(String dbName, String projectName, String objectName) {
         //Use database with xmlda_item table
         queryManager.wannaUse(connection, dbName);
         System.out.println("Database: engine. Ready to process xmlda_item");
@@ -86,11 +86,16 @@ public class DBManager {
         //Filling name column with values like in fk_argument column
         queryManager.queryForMe(connection, "UPDATE xmlda_item SET xmlda_item.name = xmlda_item.fk_argument;");
 
-        //Modify column name
-        queryManager.queryForMe(connection, "UPDATE xmlda_item SET xmlda_item.name = REPLACE(xmlda_item.name, '"+projectName+"."+"', '')");
+        if(projectName.equals(objectName)){
+            System.out.println("Project and object has the same id numbers");
+            //Modify column name
+            String template = projectName+"."+objectName+".";
+            queryManager.queryForMe(connection, "UPDATE xmlda_item SET xmlda_item.name = REPLACE(xmlda_item.name, '"+template+"', '"+objectName+".')");
+
+        }else{
+            //Modify column name
+            queryManager.queryForMe(connection, "UPDATE xmlda_item SET xmlda_item.name = REPLACE(xmlda_item.name, '"+projectName+"."+"', '')");
+        }
     }
 
-//    public ScriptRunner getRunner() {
-//        return runner;
-//    }
 }

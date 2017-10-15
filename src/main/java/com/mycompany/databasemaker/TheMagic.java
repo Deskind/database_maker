@@ -27,11 +27,11 @@ public class TheMagic {
         br = new BufferedReader(new InputStreamReader(System.in));
         System.out.print("Enter name for pro and engine databases without _pro and _engine postfixes \n");
 //        String dbName = br.readLine();
-        String dbName = "zodino";
+        String dbName = "slonim_pns_enka";
 
         System.out.print("Enter name as it is in proman folder without _pro and _engine prefixes \n");
 //        String fileName = br.readLine();
-        String fileName = "Жодино ПНС №20";
+        String fileName = "Слоним ПНС ЭНКА";
 
         System.out.print("Do you planning to use OPC servers????? (y/n) \n");
         String useOpc = br.readLine();
@@ -53,13 +53,14 @@ public class TheMagic {
         dbManager.createAndFillTables(dbName, pathForFillingTables, fileName);
 
         //Asking DBManager to fill xmlda_item table if user says "y"
-        if(useOpc == " isy"){
-            System.out.println("Enter project name on english!");
-            String s = br.readLine();
-            dbManager.fillXmldaTable(dbName, s);
+        if(useOpc.equals("y")){
+            System.out.println("OPC Server gonna be used! Enter project name on english lang.");
+            String projectName = br.readLine();
+            System.out.println("Enter object name on english lang.");
+            String objectName = br.readLine();
+            dbManager.fillXmldaTable(dbName+"_engine", projectName, objectName);
         }else{
             System.out.println("OPC is not using");
-            System.out.println("The opc input is" + useOpc);
         }
 
     }

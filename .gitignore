@@ -1,0 +1,6 @@
+.idea/
+target/
+create_db.log
+create_db_error.log
+database_maker.iml
+nbactions.xml
