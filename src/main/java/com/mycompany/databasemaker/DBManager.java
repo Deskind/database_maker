@@ -3,6 +3,7 @@ package com.mycompany.databasemaker;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
@@ -75,7 +76,7 @@ public class DBManager {
         }
     }
 
-    public void fillXmldaTable(String dbName, String projectName, String objectName) {
+    public void fillXmldaTable(String dbName)   {
         //Use database with xmlda_item table
         queryManager.wannaUse(connection, dbName);
         System.out.println("Database: engine. Ready to process xmlda_item");
@@ -86,8 +87,24 @@ public class DBManager {
         //Filling name column with values like in fk_argument column
         queryManager.queryForMe(connection, "UPDATE xmlda_item SET xmlda_item.name = xmlda_item.fk_argument;");
 
+        //Get PROJECT and OBJECT NAMES from database by asking query manager to execute method 'executeSelect()'
+        ResultSet resultSet = queryManager.executeSelect(connection, "SELECT id FROM object");
+        //Gtring will look like slonim_pns_enka.slonim_pns_enka.
+        String [] arr = null;
+        try {
+            //Move cursor
+            resultSet.next();
+            arr = resultSet.getString("id").split("\\.");
+        } catch (SQLException e) {
+            System.out.println("No such column --->   id");
+            e.printStackTrace();
+        }
+
+        //Split projectNameFromDb. First part is ---> project name. Second part is -----> object name.
+        String projectName = arr[0];
+        String objectName = arr[1];
+
         if(projectName.equals(objectName)){
-            System.out.println("Project and object has the same id numbers");
             //Modify column name
             String template = projectName+"."+objectName+".";
             queryManager.queryForMe(connection, "UPDATE xmlda_item SET xmlda_item.name = REPLACE(xmlda_item.name, '"+template+"', '"+objectName+".')");

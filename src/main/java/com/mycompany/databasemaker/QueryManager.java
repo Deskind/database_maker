@@ -1,6 +1,7 @@
 package com.mycompany.databasemaker;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
@@ -24,6 +25,17 @@ public class QueryManager {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public ResultSet executeSelect(Connection connection, String selectString) {
+        ResultSet rs = null;
+        try {
+            rs = connection.createStatement().executeQuery(selectString);
+        } catch (SQLException e) {
+            System.out.println("Can't execute select statement to get project name");
+            e.printStackTrace();
+        }
+        return rs;
     }
 
 }

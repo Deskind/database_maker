@@ -16,18 +16,28 @@ import java.util.Properties;
 public class TheMagic {
     
     public static void main(String args[]) throws IOException, SQLException, URISyntaxException{
-        BufferedReader br = null;
-        InputStream in = null;
-        Properties properties = null;
-        Connection connection = null;
-        DBManager dbManager = new DBManager(ConnectionManager.getConnection("root", ""));
-
-
         //Reader for getting user input from console
-        br = new BufferedReader(new InputStreamReader(System.in));
-        System.out.print("Enter name for pro and engine databases without _pro and _engine postfixes \n");
-//        String dbName = br.readLine();
-        String dbName = "slonim_pns_enka";
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+        //Stream for reading resource files
+        InputStream in = null;
+        Properties properties = new Properties();
+        in = TheMagic.class.getClassLoader().getResourceAsStream("database_credentials.properties");
+        properties.load(in);
+
+        //Getting properties from file
+        String user = properties.getProperty("user");
+        String password = properties.getProperty("password");
+        String pathForFillingTables = "d:\\AsconXe\\proman\\";
+        String dbName = properties.getProperty("dbName");
+        String projectName = properties.getProperty("projectName");
+        String objectName = properties.getProperty("objectName");
+
+        //Creating dbManager object which performs all interactions with db and other objects
+        DBManager dbManager = new DBManager(ConnectionManager.getConnection(user, password));
+
+
+
 
         System.out.print("Enter name as it is in proman folder without _pro and _engine prefixes \n");
 //        String fileName = br.readLine();
@@ -35,15 +45,6 @@ public class TheMagic {
 
         System.out.print("Do you planning to use OPC servers????? (y/n) \n");
         String useOpc = br.readLine();
-
-        //Get values from properties file
-        properties = new Properties();
-        in = TheMagic.class.getClassLoader().getResourceAsStream("database_credentials.properties");
-        properties.load(in);
-        String user = properties.getProperty("user");
-        String password = properties.getProperty("password");
-        String pathForFillingTables = properties.getProperty("pathForFillingTables");
-
 
 
         //Asking DatabaseManager to create two databases
@@ -54,11 +55,7 @@ public class TheMagic {
 
         //Asking DBManager to fill xmlda_item table if user says "y"
         if(useOpc.equals("y")){
-            System.out.println("OPC Server gonna be used! Enter project name on english lang.");
-            String projectName = br.readLine();
-            System.out.println("Enter object name on english lang.");
-            String objectName = br.readLine();
-            dbManager.fillXmldaTable(dbName+"_engine", projectName, objectName);
+            dbManager.fillXmldaTable(dbName+"_engine");
         }else{
             System.out.println("OPC is not using");
         }
