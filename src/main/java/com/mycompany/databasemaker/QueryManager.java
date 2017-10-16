@@ -4,9 +4,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-/**
- * Created by iseverin on 04.10.17.
- */
+
 public class QueryManager {
     public void queryForMe(Connection connection, String query) {
         try {
